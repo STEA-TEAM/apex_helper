@@ -2,7 +2,8 @@ from datetime import datetime
 from threading import Event, Thread
 
 from constants import ORIGIN_SCREEN_SIZE, LEFT_SOLT, RIGHT_SOLT, AMMO_COLOR_DICT
-from types import AmmoInfo
+from screen_recorder import ImageHandler
+from types import AmmoInfo, WeaponArea
 from utils import get_point_color
 
 import cv2
@@ -10,49 +11,32 @@ import numpy as np
 import pyautogui
 
 
-class WeaponManager:
+class WeaponManager(ImageHandler):
     __scale: float
-    __weapon_area: (int, int, int, int)
+    __weapon_area: WeaponArea
     __weapon_left: AmmoInfo
     __weapon_right: AmmoInfo
 
-    __thread_handle: Thread
-    __stop_event: Event
-
-    def __init__(self, config):
+    def __init__(self):
         screen_size = pyautogui.size()
         print(f"Initializing with screen size: {screen_size}")
         self.__scale = screen_size[0] / ORIGIN_SCREEN_SIZE
-        area_width = round(731 * self.__scale)
-        area_height = round(207 * self.__scale)
-        self.__weapon_area[0] = screen_size[0] - area_width - round(101 * self.__scale)
-        self.__weapon_area[1] = screen_size[1] - area_height - round(45 * self.__scale)
-        self.__weapon_area[2] = area_width
-        self.__weapon_area[3] = area_height
+        self.__weapon_area["x2"] = screen_size[0] - round(101 * self.__scale)
+        self.__weapon_area["y2"] = screen_size[1] - round(45 * self.__scale)
+        self.__weapon_area["x1"] = self.__weapon_area["y2"] - round(731 * self.__scale)
+        self.__weapon_area["y1"] = self.__weapon_area["y2"] - round(207 * self.__scale)
+
         print(f"Initialized weapon area: {self.__weapon_area}")
-        self.__thread_handle = Thread(target=self.__weapon_detector)
 
-    def start(self):
-        if self.__thread_handle.is_alive():
-            print("Weapon Manager is already running")
-            return
-        self.__thread_handle.start()
-
-    def stop(self):
-        self.__stop_event.set()
-
-    def __weapon_detector(self):
-        while True:
-            if self.__stop_event.is_set():
-                self.__stop_event.clear()
-                return
-            weapon_area_image = cv2.cvtColor(
-                np.asarray(pyautogui.screenshot(region=self.__weapon_area)), cv2.COLOR_RGB2BGR
-            )
-
-            ammo_info = self.__get_ammo_infos(weapon_area_image)
-            res = self.__get_weapon_identity(weapon_area_image, ammo_info)
-            print("Result : ", datetime.now(), res)
+    def __call__(self, image):
+        cropped_image = image[
+                        self.__weapon_area["y1"]:self.__weapon_area["y2"],
+                        self.__weapon_area["x1"]:self.__weapon_area["x2"]
+                        ]
+        ammo_info = self.__get_ammo_infos(cropped_image)
+        weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
+        print("Ammo info: ", datetime.now(), ammo_info)
+        print("Weapon identity: ", datetime.now(), weapon_identity)
 
     def __get_scaled_point(self, point: (int, int)) -> (int, int):
         return round(point[0] * self.__scale), round(point[1] * self.__scale)
@@ -88,9 +72,8 @@ class WeaponManager:
         else:
             return None
 
-    def __get_weapon_identity(self, img, ammo_info: AmmoInfo | None) -> int:
+    def __get_weapon_identity(self, img, ammo_info: AmmoInfo | None) -> str | None:
         if ammo_info is None:
             return None
 
-
-        return 0
+        return ""

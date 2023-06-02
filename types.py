@@ -15,5 +15,17 @@ class AmmoType(Enum):
 
 
 class AmmoInfo(TypedDict):
-    type: str
+    type: AmmoType
     active: bool
+
+
+class WeaponArea(TypedDict):
+    x1: int
+    y1: int
+    x2: int
+    y2: int
+
+
+class WeaponInfo(TypedDict):
+    name: str
+    eigenvalues: tuple[float, float, float]
