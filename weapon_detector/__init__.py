@@ -70,6 +70,7 @@ class WeaponDetector(ImageHandler):
         weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
         for weapon_info in weapon_info_list:
             weapon_image = get_image_part(img, get_scaled_rect_area(self.__scale, WEAPON_ICON_AREA))
+            # TODO: Implement eigenvalues
             # eigenvalues = cv2.calcHist([weapon_image], [0], None, [256], [0, 256])
             # if weapon_info["eigenvalues"] == eigenvalues:
             return weapon_info["name"]
