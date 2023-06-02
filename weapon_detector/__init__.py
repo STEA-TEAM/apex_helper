@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import cv2
+import numpy as np
 from pyautogui import size as get_screen_size
 
 from screen_recorder import ImageHandler
@@ -10,7 +11,7 @@ from weapon_detector.utils import get_image_part, get_point_color, get_scaled_po
 
 
 class WeaponDetector(ImageHandler):
-    __last_time: datetime = datetime.now()
+    __timestamps: List[datetime] = [datetime.now()]
     __scale: float
     __weapon_area: RectArea
     __weapon_left: AmmoInfo
@@ -77,17 +78,21 @@ class WeaponDetector(ImageHandler):
         return None
 
     def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
-        current_time = datetime.now()
+        self.__timestamps.append(datetime.now())
+        if self.__timestamps.__len__() > 5:
+            self.__timestamps.pop(0)
         if ammo_info is not None:
             ammo_info_text = f'{ammo_info["type"].value}'
         else:
             ammo_info_text = 'Unknown'
+        intervals = [(timestamp - self.__timestamps[i - 1]).microseconds for i, timestamp in
+                     enumerate(self.__timestamps) if i > 0]
         th, img = cv2.threshold(img, 254, 255, cv2.THRESH_BINARY)
         cv2.putText(img, f'Ammo type: {ammo_info_text}',
                     (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(img, f'Weapon identity: {weapon_identity}',
                     (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(img, f'Fps: {round(10 ** 6 / (current_time - self.__last_time).microseconds, 2)}',
+        cv2.putText(img, f'Fps: {round(10 ** 6 / np.average(intervals), 2)}',
                     (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.imshow("Weapon Area", img)
-        self.__last_time = current_time
+
