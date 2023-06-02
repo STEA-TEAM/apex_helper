@@ -33,7 +33,7 @@ class WeaponDetector(ImageHandler):
         cropped_image = get_image_part(image, self.__weapon_area)
         ammo_info = self.__get_ammo_infos(cropped_image)
         weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
-        self.__display_info(image, ammo_info, weapon_identity)
+        self.__display_info(cropped_image, ammo_info, weapon_identity)
 
     def __get_ammo_infos(self, img) -> AmmoInfo | None:
         weapon_left: AmmoInfo
@@ -70,9 +70,9 @@ class WeaponDetector(ImageHandler):
         weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
         for weapon_info in weapon_info_list:
             weapon_image = get_image_part(img, get_scaled_rect_area(self.__scale, WEAPON_ICON_AREA))
-            eigenvalues = cv2.calcHist([weapon_image], [0], None, [256], [0, 256])
-            if weapon_info["eigenvalues"] == eigenvalues:
-                return weapon_info["name"]
+            # eigenvalues = cv2.calcHist([weapon_image], [0], None, [256], [0, 256])
+            # if weapon_info["eigenvalues"] == eigenvalues:
+            return weapon_info["name"]
         return None
 
     def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
@@ -81,6 +81,7 @@ class WeaponDetector(ImageHandler):
             ammo_info_text = f'{ammo_info["type"].value}'
         else:
             ammo_info_text = 'Unknown'
+        th, img = cv2.threshold(img, 254, 255, cv2.THRESH_BINARY)
         cv2.putText(img, f'Ammo type: {ammo_info_text}',
                     (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(img, f'Weapon identity: {weapon_identity}',
