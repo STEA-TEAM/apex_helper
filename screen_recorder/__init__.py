@@ -50,10 +50,10 @@ class ScreenRecorder:
         while True:
             image = self.__camera.get_latest_frame()
             if image is not None:
-                # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                 cv2.imshow("Screen Recorder", image)
-                # for handler in self.__handler_map.values():
-                #     handler(image)
+                for handler in self.__handler_map.values():
+                    handler(image)
             if cv2.waitKey(1) & 0xFF == ord("q") or self.__stop_event.is_set():
                 break
 
