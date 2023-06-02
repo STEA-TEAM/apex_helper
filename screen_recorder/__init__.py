@@ -38,13 +38,13 @@ class ScreenRecorder:
             return
         self.__stop_event.set()
         self.__thread_handle.join()
+        cv2.destroyAllWindows()
 
     def __capture_screen(self):
         while True:
-            if self.__stop_event.is_set():
-                self.__stop_event.clear()
-                return
-
             image = cv2.cvtColor(np.asarray(pyautogui.screenshot()), cv2.COLOR_RGB2BGR)
             for handler in self.__handler_map.values():
                 handler(image)
+            if cv2.waitKey(10) & 0xFF == ord("q") or self.__stop_event.is_set():
+                self.__stop_event.clear()
+                return
