@@ -11,7 +11,7 @@ from weapon_detector.utils import get_image_part, get_point_color, get_scaled_po
 
 
 class WeaponDetector(ImageHandler):
-    __timestamps: List[datetime] = [datetime.now()]
+    __timestamps: List[float] = [datetime.now().timestamp()]
     __scale: float
     __weapon_area: RectArea
     __weapon_left: AmmoInfo
@@ -78,7 +78,7 @@ class WeaponDetector(ImageHandler):
         return None
 
     def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
-        self.__timestamps.append(datetime.now())
+        self.__timestamps.append(datetime.now().timestamp())
         if self.__timestamps.__len__() > 5:
             self.__timestamps.pop(0)
         if ammo_info is not None:
@@ -90,6 +90,6 @@ class WeaponDetector(ImageHandler):
                     (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(img, f'Weapon identity: {weapon_identity}',
                     (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(img, f'Fps: {round(10 ** 6 / np.average(np.diff(self.__timestamps)), 2)}',
+        cv2.putText(img, f'Fps: {round(1 / np.average(np.diff(self.__timestamps)), 2)}',
                     (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.imshow("Weapon Area", img)

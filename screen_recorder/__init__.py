@@ -1,9 +1,8 @@
-import time
 from abc import ABC, abstractmethod
 from threading import Thread, Event
 
-import cv2
 import dxcam
+import cv2
 
 
 class ImageHandler(ABC):
@@ -19,8 +18,7 @@ class ScreenRecorder:
     __thread_handle: Thread
 
     def __init__(self):
-        self.__camera = dxcam.create()
-        time.sleep(0.1)
+        self.__camera = dxcam.create(output_idx=0, output_color="BGR")
         self.__thread_handle = Thread(target=self.__capture_screen)
 
     def register(self, name, handler: ImageHandler):
@@ -45,18 +43,15 @@ class ScreenRecorder:
 
     def __capture_screen(self):
         self.__camera.start()
-        time.sleep(0.1)
 
         while True:
             image = self.__camera.get_latest_frame()
             if image is not None:
-                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-                cv2.imshow("Screen Recorder", image)
+                # cv2.imshow("Screen Recorder", image)
                 for handler in self.__handler_map.values():
                     handler(image)
-            if cv2.waitKey(1) & 0xFF == ord("q") or self.__stop_event.is_set():
+            if cv2.waitKey(16) & 0xFF == ord("q") or self.__stop_event.is_set():
                 break
 
         self.__stop_event.clear()
-        time.sleep(0.1)
         self.__camera.stop()
