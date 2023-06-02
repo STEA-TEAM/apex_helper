@@ -4,9 +4,9 @@ import cv2
 from pyautogui import size as get_screen_size
 
 from screen_recorder import ImageHandler
-from weapon_detector.constants import ORIGIN_SCREEN_SIZE, LEFT_SOLT, RIGHT_SOLT, AMMO_COLOR_DICT
+from weapon_detector.constants import *
 from weapon_detector.types import RectArea, AmmoInfo, AmmoType
-from weapon_detector.utils import get_image_part, get_point_color
+from weapon_detector.utils import get_image_part, get_point_color, get_scaled_point, get_scaled_rect_area
 
 
 class WeaponDetector(ImageHandler):
@@ -33,25 +33,14 @@ class WeaponDetector(ImageHandler):
         cropped_image = get_image_part(image, self.__weapon_area)
         ammo_info = self.__get_ammo_infos(cropped_image)
         weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
-        current_time = datetime.now()
-        cv2.putText(cropped_image, f'Ammo info: {ammo_info}',
-                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(cropped_image, f'Weapon identity: {weapon_identity}',
-                    (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(cropped_image, f'Fps: {round(10 ** 6 / (current_time - self.__last_time).microseconds, 2)}',
-                    (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        self.__last_time = current_time
-        cv2.imshow("Weapon Area", cropped_image)
-
-    def __get_scaled_point(self, point: (int, int)) -> (int, int):
-        return round(point[0] * self.__scale), round(point[1] * self.__scale)
+        self.__display_info(image, ammo_info, weapon_identity)
 
     def __get_ammo_infos(self, img) -> AmmoInfo | None:
         weapon_left: AmmoInfo
         weapon_right: AmmoInfo
 
-        weapon_left_color = get_point_color(img, self.__get_scaled_point(LEFT_SOLT))
-        weapon_right_color = get_point_color(img, self.__get_scaled_point(RIGHT_SOLT))
+        weapon_left_color = get_point_color(img, get_scaled_point(self.__scale, LEFT_SOLT))
+        weapon_right_color = get_point_color(img, get_scaled_point(self.__scale, RIGHT_SOLT))
         if weapon_left_color in AMMO_COLOR_DICT:
             weapon_left = AMMO_COLOR_DICT[weapon_left_color]
         else:
@@ -78,5 +67,25 @@ class WeaponDetector(ImageHandler):
     def __get_weapon_identity(self, img, ammo_info: AmmoInfo | None) -> str | None:
         if ammo_info is None:
             return None
+        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
+        for weapon_info in weapon_info_list:
+            weapon_image = get_image_part(img, get_scaled_rect_area(self.__scale, WEAPON_ICON_AREA))
+            eigenvalues = cv2.calcHist([weapon_image], [0], None, [256], [0, 256])
+            if weapon_info["eigenvalues"] == eigenvalues:
+                return weapon_info["name"]
+        return None
 
-        return ""
+    def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
+        current_time = datetime.now()
+        if ammo_info is not None:
+            ammo_info_text = f'{ammo_info["type"].value}'
+        else:
+            ammo_info_text = 'Unknown'
+        cv2.putText(img, f'Ammo type: {ammo_info_text}',
+                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(img, f'Weapon identity: {weapon_identity}',
+                    (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+        cv2.putText(img, f'Fps: {round(10 ** 6 / (current_time - self.__last_time).microseconds, 2)}',
+                    (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+        cv2.imshow("Weapon Area", img)
+        self.__last_time = current_time

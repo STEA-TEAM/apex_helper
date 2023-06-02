@@ -44,12 +44,16 @@ class ScreenRecorder:
         cv2.destroyAllWindows()
 
     def __capture_screen(self):
+        self.__camera.start()
+
         while True:
-            image = self.__camera.grab()
+            image = self.__camera.get_latest_frame()
             if image is not None:
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
                 for handler in self.__handler_map.values():
                     handler(image)
             if cv2.waitKey(1) & 0xFF == ord("q") or self.__stop_event.is_set():
-                self.__stop_event.clear()
-                return
+                break
+
+        self.__stop_event.clear()
+        self.__camera.stop()

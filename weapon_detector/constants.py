@@ -1,8 +1,14 @@
 from typing import Dict, List
 
-from weapon_detector.types import AmmoType, AmmoInfo, WeaponInfo
+from weapon_detector.types import AmmoType, AmmoInfo, WeaponInfo, RectArea
 
 ORIGIN_SCREEN_SIZE = 3840
+WEAPON_ICON_AREA: RectArea = {
+    "x1": 74,
+    "y1": 4,
+    "x2": 400,
+    "y2": 91,
+}
 LEFT_SOLT = (37, 171)
 RIGHT_SOLT = (640, 167)
 
