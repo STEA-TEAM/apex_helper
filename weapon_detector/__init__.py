@@ -85,14 +85,11 @@ class WeaponDetector(ImageHandler):
             ammo_info_text = f'{ammo_info["type"].value}'
         else:
             ammo_info_text = 'Unknown'
-        intervals = [(timestamp - self.__timestamps[i - 1]).microseconds for i, timestamp in
-                     enumerate(self.__timestamps) if i > 0]
         th, img = cv2.threshold(img, 254, 255, cv2.THRESH_BINARY)
         cv2.putText(img, f'Ammo type: {ammo_info_text}',
                     (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(img, f'Weapon identity: {weapon_identity}',
                     (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
-        cv2.putText(img, f'Fps: {round(10 ** 6 / np.average(intervals), 2)}',
+        cv2.putText(img, f'Fps: {round(10 ** 6 / np.average(np.diff(self.__timestamps)), 2)}',
                     (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.imshow("Weapon Area", img)
-
