@@ -35,11 +35,11 @@ class WeaponDetector(ImageHandler):
         weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
         current_time = datetime.now()
         cv2.putText(cropped_image, f'Ammo info: {ammo_info}',
-                    (0, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(cropped_image, f'Weapon identity: {weapon_identity}',
-                    (0, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+                    (10, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(cropped_image, f'Fps: {round(10 ** 6 / (current_time - self.__last_time).microseconds, 2)}',
-                    (0, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
+                    (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
         self.__last_time = current_time
         cv2.imshow("Weapon Area", cropped_image)
 
