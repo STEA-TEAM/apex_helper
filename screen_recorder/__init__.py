@@ -37,6 +37,7 @@ class ScreenRecorder:
         if not self.__thread_handle.is_alive():
             print("Screen Recorder is not running")
             return
+        print("Stopping Screen Recorder")
         self.__stop_event.set()
         self.__thread_handle.join()
         cv2.destroyAllWindows()
@@ -47,11 +48,11 @@ class ScreenRecorder:
         while True:
             image = self.__camera.get_latest_frame()
             if image is not None:
-                # cv2.imshow("Screen Recorder", image)
                 for handler in self.__handler_map.values():
                     handler(image)
-            if cv2.waitKey(16) & 0xFF == ord("q") or self.__stop_event.is_set():
+            if self.__stop_event.is_set():
                 break
+            cv2.waitKey(1)
 
         self.__stop_event.clear()
         self.__camera.stop()

@@ -1,12 +1,9 @@
 from enum import Enum
-from typing import TypedDict
+from typing import TypedDict, TypeAlias
 
-
-class RectArea(TypedDict):
-    x1: int
-    y1: int
-    x2: int
-    y2: int
+Point: TypeAlias = tuple[int, int]
+Rectangle: TypeAlias = tuple[tuple[int, int], tuple[int, int]]
+Polygon: TypeAlias = list[tuple[int, int]]
 
 
 class AmmoType(Enum):

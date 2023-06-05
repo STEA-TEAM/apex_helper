@@ -1,16 +1,20 @@
 from typing import Dict, List
 
-from weapon_detector.types import AmmoType, AmmoInfo, WeaponInfo, RectArea
+from .types import AmmoType, AmmoInfo, WeaponInfo, Polygon, Point
 
 ORIGIN_SCREEN_SIZE = 3840
-WEAPON_ICON_AREA: RectArea = {
-    "x1": 74,
-    "y1": 4,
-    "x2": 400,
-    "y2": 91,
+WEAPON_ICON_DICT: Dict[AmmoType, Polygon] = {
+    AmmoType.Heavy: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Light: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Energy: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Shotgun: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Sniper: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Mythic: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Sheila: [(74, 4), (400, 4), (400, 91), (74, 91)],
+    AmmoType.Sentry: [(74, 4), (400, 4), (400, 91), (74, 91)],
 }
-LEFT_SOLT = (37, 171)
-RIGHT_SOLT = (640, 167)
+LEFT_SOLT: Point = (40, 170)
+RIGHT_SOLT: Point = (640, 170)
 
 AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
     0x386B59: {
