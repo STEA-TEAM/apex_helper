@@ -1,18 +1,9 @@
 from typing import Dict, List
 
-from .types import AmmoType, AmmoInfo, WeaponInfo, Polygon, Point
+from .types import AmmoType, AmmoInfo, WeaponInfo, Point, Rectangle
 
 ORIGIN_SCREEN_SIZE = 3840
-WEAPON_ICON_DICT: Dict[AmmoType, Polygon] = {
-    AmmoType.Heavy: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Light: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Energy: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Shotgun: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Sniper: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Mythic: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Sheila: [(74, 4), (400, 4), (400, 91), (74, 91)],
-    AmmoType.Sentry: [(74, 4), (400, 4), (400, 91), (74, 91)],
-}
+WEAPON_ICON_AREA: Rectangle = ((74, 4), (400, 88))
 LEFT_SOLT: Point = (40, 170)
 RIGHT_SOLT: Point = (640, 170)
 
@@ -78,150 +69,159 @@ AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
 WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
     AmmoType.Heavy: [
         {
-            "name": "rampage",
-            "eigenvalues": (0.914, 0.759, 0.232),
+            "name": "3030",
+            "eigenvalues": (93.1193, 69.6429, 9.6412),
         },
         {
-            "name": "prowler",
-            "eigenvalues": (0.469, 0.851, 0.269),
+            "name": "car",
+            "eigenvalues": (74.3119, 85.7143, 10.059),
         },
         {
             "name": "flatline",
-            "eigenvalues": (0.847, 0.862, 0.145),
+            "eigenvalues": (74.7706, 87.5, 9.4692),
         },
         {
-            "name": "car",
-            "eigenvalues": (0.745, 0.816, 0.181),
+            "name": "hemlok",
+            "eigenvalues": (72.0183, 89.2857, 11.7464),
         },
         {
-            "name": "3030",
-            "eigenvalues": (0.929, 0.667, 0.156),
-        }
+            "name": "prowler",
+            "eigenvalues": (0.4725, 0.8448, 0.0982),
+        },
+        {
+            "name": "rampage",
+            "eigenvalues": (91.2844, 76.7857, 14.8263),
+        },
+
     ],
     AmmoType.Light: [
         {
-            "name": "g7",
-            "eigenvalues": (0.880, 0.782, 0.201),
-        },
-        {
-            "name": "spitfire",
-            "eigenvalues": (0.856, 0.874, 0.185),
-        },
-        {
-            "name": "r301",
-            "eigenvalues": (0.794, 0.828, 0.150),
-        },
-        {
-            "name": "r99",
-            "eigenvalues": (0.709, 0.885, 0.143),
-        },
-        {
-            "name": "p2020",
-            "eigenvalues": (0.365, 0.770, 0.130),
-        },
-        {
             "name": "alternator",
-            "eigenvalues": (0.380, 0.828, 0.278),
+            "eigenvalues": (38.5321, 83.9286, 8.0111),
         },
         {
             "name": "car",
-            "eigenvalues": (0.745, 0.816, 0.181),
+            "eigenvalues": (74.3119, 85.7143, 10.059),
+        },
+        {
+            "name": "g7",
+            "eigenvalues": (86.6972, 80.3571, 12.8768),
+        },
+        {
+            "name": "p2020",
+            "eigenvalues": (35.7798, 78.5714, 3.1701),
+        },
+        {
+            "name": "r301",
+            "eigenvalues": (74.3119, 83.9286, 9.502),
+        },
+        {
+            "name": "r99",
+            "eigenvalues": (71.1009, 89.2857, 8.134),
         },
         {
             "name": "re45",
-            "eigenvalues": (0.399, 0.874, 0.223),
-        }
+            "eigenvalues": (39.9083, 89.2857, 7.2985),
+        },
+        {
+            "name": "spitfire",
+            "eigenvalues": (85.3211, 91.0714, 12.8358),
+        },
     ],
     AmmoType.Energy: [
         {
-            "name": "volt",
-            "eigenvalues": (0.635, 0.747, 0.231),
-        },
-        {
-            "name": "triple",
-            "eigenvalues": (0.933, 0.897, 0.196),
-        },
-        {
             "name": "devotion",
-            "eigenvalues": (0.883, 0.793, 0.224),
-        },
-        {
-            "name": "nemesis",
-            "eigenvalues": (0.871, 0.793, 0.247),
+            "eigenvalues": (88.5321, 80.3571, 14.9738),
         },
         {
             "name": "havoc",
-            "eigenvalues": (0.782, 0.828, 0.212),
-        }
+            "eigenvalues": (78.4404, 87.5, 12.7048),
+        },
+        {
+            "name": "lstar",
+            "eigenvalues": (70.1835, 87.5, 22.8784),
+        },
+        {
+            "name": "nemesis",
+            "eigenvalues": (87.156, 80.3571, 15.9486),
+        },
+        {
+            "name": "triple",
+            "eigenvalues": (93.1193, 91.0714, 14.9001),
+        },
+        {
+            "name": "volt",
+            "eigenvalues": (63.7615, 75.0, 10.4194),
+        },
     ],
     AmmoType.Shotgun: [
         {
-            "name": "mozambique",
-            "eigenvalues": (0.475, 0.805, 0.256),
-        },
-        {
-            "name": "peacekeeper",
-            "eigenvalues": (0.853, 0.839, 0.189),
+            "name": "eva8",
+            "eigenvalues": (81.6514, 87.5, 11.2303),
         },
         {
             "name": "mastiff",
-            "eigenvalues": (0.948, 0.782, 0.244),
+            "eigenvalues": (94.9541, 78.5714, 17.4803),
         },
         {
-            "name": "eva8",
-            "eigenvalues": (0.819, 0.862, 0.173),
-        }
+            "name": "mozambique",
+            "eigenvalues": (47.7064, 78.5714, 9.9689),
+        },
+        {
+            "name": "peacekeeper",
+            "eigenvalues": (85.3211, 76.7857, 12.4754),
+        },
     ],
     AmmoType.Sniper: [
         {
             "name": "charge",
-            "eigenvalues": (0.764, 0.885, 0.311),
+            "eigenvalues": (76.1468, 89.2857, 19.8067),
         },
         {
             "name": "longbow",
-            "eigenvalues": (0.920, 0.667, 0.230),
+            "eigenvalues": (91.7431, 69.6429, 13.3109),
         },
         {
             "name": "sentinel",
-            "eigenvalues": (0.969, 0.747, 0.225),
+            "eigenvalues": (96.789, 73.2143, 15.4489),
         },
         {
             "name": "wingman",
-            "eigenvalues": (0.445, 0.839, 0.288),
+            "eigenvalues": (44.4954, 83.9286, 10.018),
         }
     ],
     AmmoType.Mythic: [
         {
-            "name": "hemlok",
-            "eigenvalues": (0.791, 0.897, 0.176),
-        },
-        {
             "name": "bocek",
-            "eigenvalues": (0.853, 0.839, 0.082),
+            "eigenvalues": (84.8624, 87.5, 5.4718),
         },
         {
-            "name": "lstar",
-            "eigenvalues": (0.706, 0.874, 0.393),
-        },
-        {
-            "name": "kraber",
-            "eigenvalues": (0.975, 0.782, 0.173),
+            "name": "hemlok",
+            "eigenvalues": (72.0183, 89.2857, 11.7464),
         },
         {
             "name": "knife",
-            "eigenvalues": (0.975, 0.782, 0.173),
-        }
+            "eigenvalues": (72.2009, 52.7857, 9.7067),
+        },
+        {
+            "name": "kraber",
+            "eigenvalues": (97.2477, 82.1429, 12.6065),
+        },
+        {
+            "name": "lstar",
+            "eigenvalues": (70.1835, 87.5, 22.8784),
+        },
     ],
     AmmoType.Sheila: [
         {
             "name": "sheila",
-            "eigenvalues": (0.0, 0.0, 0.0),
+            "eigenvalues": (92.2018, 91.0714, 32.5442),
         }
     ],
     AmmoType.Sentry: [
         {
             "name": "sentry",
-            "eigenvalues": (0.0, 0.0, 0.0),
+            "eigenvalues": (95.4128, 80.3571, 13.5239),
         }
     ]
 }
