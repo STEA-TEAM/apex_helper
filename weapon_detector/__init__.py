@@ -153,9 +153,9 @@ class WeaponDetector(ImageHandler):
         scaled_image[:, :] = (255, 255, 255)
         scaled_image[:img.shape[0], :img.shape[1]] = img.copy()
 
-        fps_text = f'Fps: {round(1 / np.average(np.diff(self.__timestamps)), 2)}'
-        ammo_info_text = f'Ammo type: {ammo_info["type"].value}' if ammo_info is not None else 'Ammo type: Unknown'
-        weapon_identity_text = f'Weapon identity: {weapon_identity}'
+        fps_text = f'        Fps: {round(1 / np.average(np.diff(self.__timestamps)), 2)}'
+        ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
+        weapon_identity_text = f'    Weapon: {weapon_identity}'
         eigenvalues_text = f'Eigenvalues: {eigenvalues}'
 
         cv2.putText(scaled_image, fps_text, (10, img.shape[0] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
