@@ -21,19 +21,27 @@ from .utils import (
     image_in_rectangle,
     scale_point,
     scale_polygon,
-    scale_rectangle,
+    scale_rectangle, image_relative_diff,
 )
 
 
 class WeaponDetector(ImageHandler):
+    __window_name: str
+    __custom_ratio: float
     __timestamps: List[float] = [datetime.now().timestamp()]
     __scale: float
     __weapon_area: Rectangle
     __weapon_left: AmmoInfo
     __weapon_right: AmmoInfo
 
-    def __init__(self):
-        screen_size = get_screen_size()
+    def __init__(
+            self,
+            window_name: str = "Weapon Detector",
+            custom_ratio: float = 1.0,
+            screen_size: tuple[int, int] = get_screen_size(),
+    ):
+        self.__window_name = window_name
+        self.__custom_ratio = custom_ratio
         print(f"Initializing with screen size: {screen_size}")
         self.__scale = screen_size[0] / ORIGIN_SCREEN_SIZE
         print(f"Scale: {self.__scale}")
@@ -87,7 +95,18 @@ class WeaponDetector(ImageHandler):
 
         weapon_icon_area = scale_rectangle(self.__scale, WEAPON_ICON_AREA)
         weapon_image = image_in_rectangle(img, weapon_icon_area)
-        bounding_rectangle = cv2.boundingRect(cv2.inRange(weapon_image, (255, 255, 255), (255, 255, 255)))
+        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], 0.75)
+
+        bounding_rectangle = cv2.boundingRect(weapon_image)
+
+        eigenvalues = (
+            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
+            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
+            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
+            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
+        )
+
+        print(eigenvalues)
 
         for weapon_info in weapon_info_list:
             # TODO: Implement eigenvalues
@@ -102,12 +121,16 @@ class WeaponDetector(ImageHandler):
             self.__timestamps.pop(0)
 
         weapon_icon_area = scale_rectangle(self.__scale, WEAPON_ICON_AREA)
-        weapon_image = cv2.inRange(image_in_rectangle(img, weapon_icon_area), (255, 255, 255), (255, 255, 255))
+        weapon_image = image_in_rectangle(img, weapon_icon_area)
+        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], 0.75)
+
         bounding_rectangle = cv2.boundingRect(weapon_image)
+
         eigenvalues = (
-            round(bounding_rectangle[2] / weapon_image.shape[1] * 100, 4),
-            round(bounding_rectangle[3] / weapon_image.shape[0] * 100, 4),
-            round(np.sum(weapon_image) / 2.55 / (weapon_image.shape[1] * weapon_image.shape[0]), 4)
+            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
+            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
+            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
+            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
         )
 
         # img = cv2.inRange(img, (255, 255, 255), (255, 255, 255))
@@ -143,4 +166,13 @@ class WeaponDetector(ImageHandler):
         cv2.putText(scaled_image, eigenvalues_text, (10, img.shape[0] + 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
                     cv2.LINE_AA)
 
-        cv2.imshow("Weapon Area Mask", cv2.resize(scaled_image, None, fx=2.0, fy=2.0, interpolation=cv2.INTER_CUBIC))
+        cv2.imshow(
+            self.__window_name,
+            cv2.resize(
+                scaled_image,
+                None,
+                fx=self.__custom_ratio,
+                fy=self.__custom_ratio,
+                interpolation=cv2.INTER_CUBIC
+            )
+        )

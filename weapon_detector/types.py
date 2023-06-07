@@ -25,4 +25,4 @@ class AmmoInfo(TypedDict):
 
 class WeaponInfo(TypedDict):
     name: str
-    eigenvalues: tuple[float, float, float]
+    eigenvalues: tuple[float, float, float, float]
