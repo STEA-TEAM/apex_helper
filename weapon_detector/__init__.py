@@ -93,10 +93,8 @@ class WeaponDetector(ImageHandler):
         if weapon_info_list.__len__() == 1:
             return weapon_info_list[0]["name"]
 
-        weapon_icon_area = scale_rectangle(self.__scale, WEAPON_ICON_AREA)
-        weapon_image = image_in_rectangle(img, weapon_icon_area)
+        weapon_image = image_in_rectangle(img, scale_rectangle(self.__scale, WEAPON_ICON_AREA))
         weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], 0.95)
-
         bounding_rectangle = cv2.boundingRect(weapon_image)
 
         eigenvalues = (
@@ -106,19 +104,12 @@ class WeaponDetector(ImageHandler):
             round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
         )
 
-        # if eigenvalues[1] > 95.0:
-        #     cv2.imwrite("C:/Users/CafuuChino/Desktop/weapon_image.bmp", weapon_image)
-        #     cv2.imwrite("C:/Users/CafuuChino/Desktop/image.bmp", img)
-        #     print(eigenvalues)
-        #     exit(0)
-
         current_weapon = {
             "sum": np.inf,
             "name": None
         }
 
         for weapon_info in weapon_info_list:
-            # TODO: Implement eigenvalues
             eigenvalues_diff_sum = np.sum(np.abs(np.array(eigenvalues) - np.array(weapon_info["eigenvalues"])))
             if eigenvalues_diff_sum < current_weapon["sum"]:
                 current_weapon["sum"] = eigenvalues_diff_sum
