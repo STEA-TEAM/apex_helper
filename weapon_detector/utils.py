@@ -34,6 +34,7 @@ def image_relative_diff(image, ref_color, threshold):
     # print(ammo_img)
     # print("Reference Color:", ref_color)
     result = image.astype("int16")
-    result_sum = np.sum(np.abs(result - ref_color), axis=2)
+    result_diff = np.abs(result - ref_color)
+    result_sum = np.sum(np.where(result_diff > 0, result_diff, 0), axis=2)
     threshold_sum = (np.max(result_sum) - np.min(result_sum)) * threshold
     return np.where(result_sum > threshold_sum, 255, 0).astype("uint8")
