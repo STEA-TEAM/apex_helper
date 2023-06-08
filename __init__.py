@@ -10,7 +10,7 @@ def on_press(key):
 
 
 if __name__ == '__main__':
-    weapon_detector = WeaponDetector("Weapon Detector", 2.0)
+    weapon_detector = WeaponDetector("Weapon Detector")
     screen_recorder = ScreenRecorder()
     screen_recorder.register("weapon_manager", weapon_detector)
     keyboard.Listener(on_press=on_press).start()
