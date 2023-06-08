@@ -38,51 +38,16 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __call__(self, image):
         from cv2 import resize, INTER_NEAREST
-        from .utils import image_in_rectangle
+        from .utils import image_in_rectangle, get_ammo_infos
 
         cropped_image = image_in_rectangle(resize(
             image,
             self.__scaled_shape,
             interpolation=INTER_NEAREST
         ), self.__weapon_area)
-        ammo_info = self.__get_ammo_infos(cropped_image)
+        ammo_info = get_ammo_infos(cropped_image)
         weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
         self.__display_info(cropped_image, ammo_info, weapon_identity)
-
-    @staticmethod
-    def __get_ammo_infos(img) -> AmmoInfo | None:
-        from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
-        from .types import AmmoInfo, AmmoType
-        from .utils import get_point_color
-
-        weapon_left: AmmoInfo
-        weapon_right: AmmoInfo
-
-        weapon_left_color = get_point_color(img, LEFT_SOLT)
-        weapon_right_color = get_point_color(img, RIGHT_SOLT)
-
-        if weapon_left_color in AMMO_COLOR_DICT:
-            weapon_left = AMMO_COLOR_DICT[weapon_left_color]
-        else:
-            weapon_left = {
-                "type": AmmoType.Unknown,
-                "active": False
-            }
-
-        if weapon_right_color in AMMO_COLOR_DICT:
-            weapon_right = AMMO_COLOR_DICT[weapon_right_color]
-        else:
-            weapon_right = {
-                "type": AmmoType.Unknown,
-                "active": False
-            }
-
-        if weapon_left["active"]:
-            return weapon_left
-        elif weapon_right["active"]:
-            return weapon_right
-        else:
-            return None
 
     @staticmethod
     def __get_weapon_eigenvalues(img, threshold: float = 0.95) -> (int, int, int, int):

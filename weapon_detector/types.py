@@ -3,7 +3,6 @@ from typing import TypedDict, TypeAlias
 
 Point: TypeAlias = tuple[int, int]
 Rectangle: TypeAlias = tuple[tuple[int, int], tuple[int, int]]
-Polygon: TypeAlias = list[tuple[int, int]]
 
 
 class AmmoType(Enum):
