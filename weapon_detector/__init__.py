@@ -86,6 +86,18 @@ class WeaponDetector(ImageHandler):
         else:
             return None
 
+    def __get_weapon_eigenvalues(self, img, threshold: float = 0.95):
+        weapon_image = image_in_rectangle(img, scale_rectangle(self.__scale, WEAPON_ICON_AREA))
+        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
+        bounding_rectangle = cv2.boundingRect(weapon_image)
+
+        return (
+            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
+            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
+            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
+            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
+        )
+
     def __get_weapon_identity(self, img, ammo_info: AmmoInfo | None) -> str | None:
         if ammo_info is None:
             return None
@@ -93,16 +105,7 @@ class WeaponDetector(ImageHandler):
         if weapon_info_list.__len__() == 1:
             return weapon_info_list[0]["name"]
 
-        weapon_image = image_in_rectangle(img, scale_rectangle(self.__scale, WEAPON_ICON_AREA))
-        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], 0.95)
-        bounding_rectangle = cv2.boundingRect(weapon_image)
-
-        eigenvalues = (
-            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
-            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
-            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
-            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
-        )
+        eigenvalues = self.__get_weapon_eigenvalues(img)
 
         current_weapon = {
             "sum": np.inf,
@@ -127,15 +130,7 @@ class WeaponDetector(ImageHandler):
 
         bounding_rectangle = cv2.boundingRect(weapon_image)
 
-        eigenvalues = (
-            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
-            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
-            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
-            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
-        )
-
-        # img = cv2.inRange(img, (255, 255, 255), (255, 255, 255))
-        # img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        eigenvalues = self.__get_weapon_eigenvalues(img)
 
         cv2.rectangle(
             img,
@@ -149,28 +144,28 @@ class WeaponDetector(ImageHandler):
         weapon_icon_area = scale_rectangle(self.__scale, WEAPON_ICON_AREA)
         cv2.rectangle(img, weapon_icon_area[0], weapon_icon_area[1], (0, 0, 255, 127), 1)
 
-        scaled_image = np.zeros((img.shape[0] + 100, img.shape[1], 3), np.uint8)
-        scaled_image[:, :] = (255, 255, 255)
-        scaled_image[:img.shape[0], :img.shape[1]] = img.copy()
+        extended_image = np.zeros((img.shape[0] + 100 / self.__scale, img.shape[1], 3), np.uint8)
+        extended_image[:, :] = (255, 255, 255)
+        extended_image[:img.shape[0], :img.shape[1]] = img.copy()
 
         fps_text = f'        Fps: {round(1 / np.average(np.diff(self.__timestamps)), 2)}'
         ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
         weapon_identity_text = f'    Weapon: {weapon_identity}'
         eigenvalues_text = f'Eigenvalues: {eigenvalues}'
 
-        cv2.putText(scaled_image, fps_text, (10, img.shape[0] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
+        cv2.putText(extended_image, fps_text, (10, img.shape[0] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
                     cv2.LINE_AA)
-        cv2.putText(scaled_image, ammo_info_text, (10, img.shape[0] + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
+        cv2.putText(extended_image, ammo_info_text, (10, img.shape[0] + 40), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
                     cv2.LINE_AA)
-        cv2.putText(scaled_image, weapon_identity_text, (10, img.shape[0] + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
-                    cv2.LINE_AA)
-        cv2.putText(scaled_image, eigenvalues_text, (10, img.shape[0] + 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
+        cv2.putText(extended_image, weapon_identity_text, (10, img.shape[0] + 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,),
+                    1, cv2.LINE_AA)
+        cv2.putText(extended_image, eigenvalues_text, (10, img.shape[0] + 80), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
                     cv2.LINE_AA)
 
         cv2.imshow(
             self.__window_name,
             cv2.resize(
-                scaled_image,
+                extended_image,
                 None,
                 fx=self.__custom_ratio,
                 fy=self.__custom_ratio,
