@@ -1,6 +1,7 @@
+from cv2 import boundingRect
 import numpy as np
 
-from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
+from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT, WEAPON_ICON_AREA
 from .types import AmmoInfo, AmmoType, Point, Rectangle
 
 
@@ -50,3 +51,42 @@ def get_ammo_infos(img) -> AmmoInfo | None:
         return weapon_right
     else:
         return None
+
+
+def get_weapon_eigenvalues(img, threshold: float = 0.95) -> (int, int, int, int):
+    weapon_image = image_in_rectangle(img, WEAPON_ICON_AREA)
+    weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
+    bounding_rectangle = boundingRect(weapon_image)
+
+    return (
+        round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
+        round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
+        round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
+        round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
+    )
+
+
+def get_weapon_identity(img, ammo_info: AmmoInfo | None) -> str | None:
+    from numpy import abs, array, inf, sum
+
+    from .constants import WEAPON_INFO_DICT
+
+    if ammo_info is None:
+        return None
+    weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
+    if weapon_info_list.__len__() == 1:
+        return weapon_info_list[0]["name"]
+
+    eigenvalues = get_weapon_eigenvalues(img)
+
+    current_weapon = {
+        "sum": inf,
+        "name": None
+    }
+
+    for weapon_info in weapon_info_list:
+        eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
+        if eigenvalues_diff_sum < current_weapon["sum"]:
+            current_weapon["sum"] = eigenvalues_diff_sum
+            current_weapon["name"] = weapon_info["name"]
+    return current_weapon["name"]

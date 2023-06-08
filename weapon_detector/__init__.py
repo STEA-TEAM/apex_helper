@@ -1,5 +1,3 @@
-__all__ = ["WeaponDetector"]
-
 import screen_recorder
 
 
@@ -19,7 +17,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __init__(
             self,
-            window_name: str = "Weapon Detector",
+            window_name: str,
             custom_ratio: float = 1.0,
             screen_size: tuple[int, int] = get_screen_size(),
     ):
@@ -38,7 +36,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __call__(self, image):
         from cv2 import resize, INTER_NEAREST
-        from .utils import image_in_rectangle, get_ammo_infos
+        from .utils import image_in_rectangle, get_ammo_infos, get_weapon_identity
 
         cropped_image = image_in_rectangle(resize(
             image,
@@ -46,51 +44,9 @@ class WeaponDetector(screen_recorder.ImageHandler):
             interpolation=INTER_NEAREST
         ), self.__weapon_area)
         ammo_info = get_ammo_infos(cropped_image)
-        weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
-        self.__display_info(cropped_image, ammo_info, weapon_identity)
-
-    @staticmethod
-    def __get_weapon_eigenvalues(img, threshold: float = 0.95) -> (int, int, int, int):
-        from cv2 import boundingRect
-
-        from .constants import WEAPON_ICON_AREA
-        from .utils import image_in_rectangle, image_relative_diff
-
-        weapon_image = image_in_rectangle(img, WEAPON_ICON_AREA)
-        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
-        bounding_rectangle = boundingRect(weapon_image)
-
-        return (
-            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
-            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
-            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
-            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
-        )
-
-    def __get_weapon_identity(self, img, ammo_info: AmmoInfo | None) -> str | None:
-        from numpy import abs, array, inf, sum
-
-        from .constants import WEAPON_INFO_DICT
-
-        if ammo_info is None:
-            return None
-        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
-        if weapon_info_list.__len__() == 1:
-            return weapon_info_list[0]["name"]
-
-        eigenvalues = self.__get_weapon_eigenvalues(img)
-
-        current_weapon = {
-            "sum": inf,
-            "name": None
-        }
-
-        for weapon_info in weapon_info_list:
-            eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
-            if eigenvalues_diff_sum < current_weapon["sum"]:
-                current_weapon["sum"] = eigenvalues_diff_sum
-                current_weapon["name"] = weapon_info["name"]
-        return current_weapon["name"]
+        weapon_identity = get_weapon_identity(cropped_image, ammo_info)
+        if self.__window_name is not None:
+            self.__display_info(cropped_image, ammo_info, weapon_identity)
 
     def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
         from cv2 import (
@@ -108,7 +64,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
         from numpy import average, diff, round, uint8, zeros
 
         from .constants import LEFT_SOLT, RIGHT_SOLT, WEAPON_ICON_AREA
-        from .utils import image_in_rectangle, image_relative_diff
+        from .utils import image_in_rectangle, image_relative_diff, get_weapon_eigenvalues
 
         self.__timestamps.append(datetime.now().timestamp())
         if self.__timestamps.__len__() > 5:
@@ -119,7 +75,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
         bounding_rectangle = boundingRect(weapon_image)
 
-        eigenvalues = self.__get_weapon_eigenvalues(img)
+        eigenvalues = get_weapon_eigenvalues(img)
 
         rectangle(
             img,
