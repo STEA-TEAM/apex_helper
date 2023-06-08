@@ -1,3 +1,4 @@
+import time
 from abc import ABC, abstractmethod
 from threading import Thread, Event
 
@@ -18,8 +19,11 @@ class ScreenRecorder:
     __thread_handle: Thread
 
     def __init__(self):
+        print("Initializing DxCam...")
         self.__camera = dxcam.create(output_idx=0, output_color="BGR")
         self.__thread_handle = Thread(target=self.__capture_screen)
+        time.sleep(1.0)
+        print("DxCam initialized")
 
     def register(self, name, handler: ImageHandler):
         self.__handler_map[name] = handler

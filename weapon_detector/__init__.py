@@ -144,7 +144,7 @@ class WeaponDetector(ImageHandler):
         weapon_icon_area = scale_rectangle(self.__scale, WEAPON_ICON_AREA)
         cv2.rectangle(img, weapon_icon_area[0], weapon_icon_area[1], (0, 0, 255, 127), 1)
 
-        extended_image = np.zeros((img.shape[0] + 100 / self.__scale, img.shape[1], 3), np.uint8)
+        extended_image = np.zeros((img.shape[0] + round(100 / self.__scale), img.shape[1], 3), np.uint8)
         extended_image[:, :] = (255, 255, 255)
         extended_image[:img.shape[0], :img.shape[1]] = img.copy()
 
