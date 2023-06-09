@@ -2,17 +2,13 @@ import screen_recorder
 
 
 class WeaponDetector(screen_recorder.ImageHandler):
-    from datetime import datetime
     from image_debugger import ImageDebugger
     from numpy import ndarray as opencv_image
     from pyautogui import size as get_screen_size
-    from typing import List, LiteralString
+    from typing import LiteralString, Tuple
     from .types import AmmoInfo, Point, Rectangle
 
-    __window_name: LiteralString | None
-    __custom_ratio: float
     __debugger: ImageDebugger | None = None
-    __timestamps: List[float] = [datetime.now().timestamp()]
     __scaled_shape: (int, int)
     __weapon_area: Rectangle
     __weapon_left: AmmoInfo
@@ -20,16 +16,12 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __init__(
             self,
-            window_name: LiteralString | None = None,
-            custom_ratio: float = 1.0,
             screen_size: Point = get_screen_size(),
     ):
         from numpy import round, divide
 
         from .constants import ORIGIN_SCREEN_SIZE
 
-        self.__window_name = window_name
-        self.__custom_ratio = custom_ratio
         print(f"Initializing with screen size: {screen_size}")
         self.__scaled_shape = round(divide(screen_size, screen_size[0] / ORIGIN_SCREEN_SIZE)).astype(int)
         self.__weapon_area = (
@@ -39,93 +31,124 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __call__(self, image: opencv_image):
         from cv2 import resize, INTER_NEAREST
-        from .utils import image_in_rectangle, get_ammo_infos, get_weapon_identity
+        from .utils import image_in_rectangle
 
         cropped_image = image_in_rectangle(resize(
             image,
             self.__scaled_shape,
             interpolation=INTER_NEAREST
         ), self.__weapon_area)
-        ammo_info = get_ammo_infos(cropped_image)
-        weapon_identity = get_weapon_identity(cropped_image, ammo_info)
+
         if self.__debugger is not None:
+            self.__debugger.set_image(cropped_image)
+
+        ammo_info = self.get_ammo_infos(cropped_image)
+        weapon_identity = self.get_weapon_identity(cropped_image, ammo_info)
+        if self.__debugger is not None:
+            ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
+            weapon_identity_text = f'    Weapon: {weapon_identity}'
+            self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
 
-    def add_debugger(self, debugger: ImageDebugger):
+    def set_debugger(self, debugger: ImageDebugger):
         self.__debugger = debugger
 
-    def __display_info(
-            self,
-            img: opencv_image,
-            ammo_info: AmmoInfo | None,
-            weapon_identity: LiteralString | None
-    ):
-        from cv2 import (
-            boundingRect,
-            circle,
-            imshow,
-            putText,
-            rectangle,
-            resize,
-            waitKey,
-            FONT_HERSHEY_SIMPLEX,
-            INTER_LINEAR,
-            LINE_AA
-        )
-        from datetime import datetime
-        from numpy import average, diff, round, uint8, zeros
+    def get_ammo_infos(self, image: opencv_image) -> AmmoInfo | None:
+        from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
+        from .types import AmmoInfo, AmmoType
+        from .utils import get_point_color
 
-        from .constants import LEFT_SOLT, RIGHT_SOLT, WEAPON_ICON_AREA
-        from .utils import image_in_rectangle, image_relative_diff, get_weapon_eigenvalues
+        weapon_left: AmmoInfo
+        weapon_right: AmmoInfo
 
-        self.__timestamps.append(datetime.now().timestamp())
-        if self.__timestamps.__len__() > 5:
-            self.__timestamps.pop(0)
+        weapon_left_color = get_point_color(image, LEFT_SOLT)
+        weapon_right_color = get_point_color(image, RIGHT_SOLT)
 
-        weapon_image = image_in_rectangle(img, WEAPON_ICON_AREA)
-        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], 0.75)
+        if self.__debugger is not None:
+            self.__debugger.add_circle(LEFT_SOLT, 3)
+            self.__debugger.add_circle(RIGHT_SOLT, 3)
 
+        if weapon_left_color in AMMO_COLOR_DICT:
+            weapon_left = AMMO_COLOR_DICT[weapon_left_color]
+        else:
+            weapon_left = {
+                "type": AmmoType.Unknown,
+                "active": False
+            }
+
+        if weapon_right_color in AMMO_COLOR_DICT:
+            weapon_right = AMMO_COLOR_DICT[weapon_right_color]
+        else:
+            weapon_right = {
+                "type": AmmoType.Unknown,
+                "active": False
+            }
+
+        if weapon_left["active"]:
+            return weapon_left
+        elif weapon_right["active"]:
+            return weapon_right
+        else:
+            return None
+
+    def get_weapon_eigenvalues(self, image: opencv_image, threshold: float = 0.95) -> Tuple[float, float, float, float]:
+        from cv2 import boundingRect
+
+        from .constants import WEAPON_ICON_AREA
+        from .utils import image_in_rectangle, image_relative_diff
+
+        weapon_image = image_in_rectangle(image, WEAPON_ICON_AREA)
+        weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
         bounding_rectangle = boundingRect(weapon_image)
 
-        eigenvalues = get_weapon_eigenvalues(img)
-
-        rectangle(
-            img,
-            (WEAPON_ICON_AREA[0][0] + bounding_rectangle[0], WEAPON_ICON_AREA[0][1] + bounding_rectangle[1]),
-            (WEAPON_ICON_AREA[0][0] + bounding_rectangle[0] + bounding_rectangle[2],
-             WEAPON_ICON_AREA[0][1] + bounding_rectangle[1] + bounding_rectangle[3]),
-            (255, 255, 0, 127), 1
-        )
-        circle(img, LEFT_SOLT, 3, (0, 0, 255, 40), 1)
-        circle(img, RIGHT_SOLT, 3, (0, 0, 255, 40), 1)
-        rectangle(img, WEAPON_ICON_AREA[0], WEAPON_ICON_AREA[1], (0, 0, 255, 127), 1)
-
-        extended_image = zeros((img.shape[0] + 100, img.shape[1], 3), uint8)
-        extended_image[:, :] = (255, 255, 255)
-        extended_image[:img.shape[0], :img.shape[1]] = img.copy()
-
-        fps_text = f'        Fps: {round(1 / average(diff(self.__timestamps)), 2)}'
-        ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
-        weapon_identity_text = f'    Weapon: {weapon_identity}'
-        eigenvalues_text = f'Eigenvalues: {eigenvalues}'
-
-        putText(extended_image, fps_text, (10, img.shape[0] + 20), FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
-                LINE_AA)
-        putText(extended_image, ammo_info_text, (10, img.shape[0] + 40), FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
-                LINE_AA)
-        putText(extended_image, weapon_identity_text, (10, img.shape[0] + 60), FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
-                LINE_AA)
-        putText(extended_image, eigenvalues_text, (10, img.shape[0] + 80), FONT_HERSHEY_SIMPLEX, 0.5, (0,), 1,
-                LINE_AA)
-
-        imshow(
-            self.__window_name,
-            resize(
-                extended_image,
-                None,
-                fx=self.__custom_ratio,
-                fy=self.__custom_ratio,
-                interpolation=INTER_LINEAR
+        if self.__debugger is not None:
+            self.__debugger.add_rectangle(WEAPON_ICON_AREA)
+            self.__debugger.add_rectangle(
+                (
+                    (
+                        WEAPON_ICON_AREA[0][0] + bounding_rectangle[0],
+                        WEAPON_ICON_AREA[0][1] + bounding_rectangle[1]
+                    ),
+                    (
+                        WEAPON_ICON_AREA[0][0] + bounding_rectangle[0] + bounding_rectangle[2],
+                        WEAPON_ICON_AREA[0][1] + bounding_rectangle[1] + bounding_rectangle[3]
+                    )
+                ),
+                (255, 255, 0)
             )
+
+        return (
+            round(bounding_rectangle[0] / weapon_image.shape[1] * 100, 4),
+            round((bounding_rectangle[0] + bounding_rectangle[2]) / weapon_image.shape[1] * 100, 4),
+            round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
+            round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
         )
-        waitKey(1)
+
+    def get_weapon_identity(self, image: opencv_image, ammo_info: AmmoInfo | None) -> LiteralString | None:
+        from numpy import abs, array, inf, sum
+
+        from .constants import WEAPON_INFO_DICT
+
+        if ammo_info is None:
+            return None
+        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
+        if weapon_info_list.__len__() == 1:
+            return weapon_info_list[0]["name"]
+
+        eigenvalues = self.get_weapon_eigenvalues(image)
+
+        if self.__debugger is not None:
+            eigenvalues_text = f'Eigenvalues: {eigenvalues}'
+            self.__debugger.add_texts([eigenvalues_text])
+
+        current_weapon = {
+            "sum": inf,
+            "name": None
+        }
+
+        for weapon_info in weapon_info_list:
+            eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
+            if eigenvalues_diff_sum < current_weapon["sum"]:
+                current_weapon["sum"] = eigenvalues_diff_sum
+                current_weapon["name"] = weapon_info["name"]
+        return current_weapon["name"]
