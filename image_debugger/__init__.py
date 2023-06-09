@@ -37,7 +37,7 @@ class ImageDebugger:
             self.__image = cv2.copyMakeBorder(
                 self.__image,
                 0,
-                (texts.__len__() + 1) * 20,
+                (texts.__len__()) * 20,
                 0,
                 0,
                 cv2.BORDER_CONSTANT,
@@ -48,11 +48,12 @@ class ImageDebugger:
                 cv2.putText(
                     self.__image,
                     text,
-                    (10, old_height + (index + 1) * 20),
+                    (5, 15 + old_height + index * 20),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     size,
                     color,
-                    thickness
+                    thickness,
+                    cv2.LINE_AA
                 )
 
     def show(self):
@@ -67,8 +68,8 @@ class ImageDebugger:
         if self.__image is not None:
             fps_text = f'Fps: {round(1 / average(diff(self.__timestamps)), 2)}'
             image = self.__image.copy()
-            image = cv2.putText(image, fps_text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (127, 127, 127), 2)
-            image = cv2.putText(image, fps_text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1)
+            cv2.putText(image, fps_text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (127, 127, 127), 5, cv2.LINE_AA)
+            cv2.putText(image, fps_text, (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 1, cv2.LINE_AA)
             cv2.imshow(
                 self.__window_name,
                 cv2.resize(

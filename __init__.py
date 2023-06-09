@@ -12,7 +12,7 @@ def on_press(key):
 
 
 if __name__ == '__main__':
-    image_debugger = ImageDebugger("Weapon Detector", 1.0)
+    image_debugger = ImageDebugger("Weapon Detector")
     screen_recorder = ScreenRecorder()
     weapon_detector = WeaponDetector()
 

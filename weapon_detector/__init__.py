@@ -30,17 +30,21 @@ class WeaponDetector(screen_recorder.ImageHandler):
         )
 
     def __call__(self, image: opencv_image):
-        from cv2 import resize, INTER_NEAREST
+        from cv2 import resize, INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT
         from .utils import image_in_rectangle
 
         cropped_image = image_in_rectangle(resize(
             image,
             self.__scaled_shape,
-            interpolation=INTER_NEAREST
+            interpolation=INTER_NEAREST_EXACT
         ), self.__weapon_area)
 
         if self.__debugger is not None:
-            self.__debugger.set_image(cropped_image)
+            self.__debugger.set_image(image_in_rectangle(resize(
+                image,
+                self.__scaled_shape,
+                interpolation=INTER_AREA if self.__scaled_shape[0] < image.shape[1] else INTER_CUBIC
+            ), self.__weapon_area))
 
         ammo_info = self.get_ammo_infos(cropped_image)
         weapon_identity = self.get_weapon_identity(cropped_image, ammo_info)
