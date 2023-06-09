@@ -1,35 +1,41 @@
 class ImageDebugger:
-    from datetime import datetime
-    from numpy import ndarray as opencv_image
-    from typing import List, LiteralString
+    from datetime import datetime as __datetime
+    from numpy import ndarray as __opencv_image
+    from typing import List as __List, LiteralString as __LiteralString
 
-    from .types import Color, Point, Rectangle
+    from .types import Color as __Color, Point as __Point, Rectangle as __Rectangle
 
-    __image: opencv_image | None = None
-    __window_name: LiteralString
+    __image: __opencv_image | None = None
+    __window_name: __LiteralString
     __custom_scale: float
-    __timestamps: List[float] = [datetime.now().timestamp()]
+    __timestamps: __List[float] = [__datetime.now().timestamp()]
 
-    def __init__(self, window_name: LiteralString = "Image Debugger", custom_scale: float = 1.0):
+    def __init__(self, window_name: __LiteralString = "Image Debugger", custom_scale: float = 1.0):
         self.__window_name = window_name
         self.__custom_scale = custom_scale
 
-    def set_image(self, image: opencv_image):
+    def set_image(self, image: __opencv_image):
         self.__image = image.copy()
 
-    def add_circle(self, center: Point, radius: int, color: Color = (0, 0, 255), thickness: int = 1):
+    def add_circle(self, center: __Point, radius: int, color: __Color = (0, 0, 255), thickness: int = 1):
         import cv2
 
         if self.__image is not None:
             cv2.circle(self.__image, center, radius, color, thickness)
 
-    def add_rectangle(self, rectangle: Rectangle, color: Color = (0, 0, 255), thickness: int = 1):
+    def add_rectangle(self, rectangle: __Rectangle, color: __Color = (0, 0, 255), thickness: int = 1):
         import cv2
 
         if self.__image is not None:
             cv2.rectangle(self.__image, rectangle[0], rectangle[1], color, thickness)
 
-    def add_texts(self, texts: List[LiteralString], size: float = 0.5, color: Color = (0, 0, 0), thickness: int = 1):
+    def add_texts(
+            self,
+            texts: __List[__LiteralString],
+            size: float = 0.5,
+            color: __Color = (0, 0, 0),
+            thickness: int = 1
+    ):
         import cv2
 
         if self.__image is not None:

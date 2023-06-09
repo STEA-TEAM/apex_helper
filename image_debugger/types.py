@@ -1,6 +1,5 @@
-from enum import Enum
-from typing import LiteralString, Tuple, TypeAlias, TypedDict
+from typing import Tuple, TypeAlias
 
-Color = Tuple[int, int, int]
+Color: TypeAlias = Tuple[int, int, int]
 Point: TypeAlias = Tuple[int, int]
 Rectangle: TypeAlias = Tuple[Tuple[int, int], Tuple[int, int]]

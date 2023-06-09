@@ -1,9 +1,6 @@
-from cv2 import boundingRect
 from numpy import ndarray as opencv_image, abs, int16, max, min, sum, uint8, where
-from typing import LiteralString, Tuple
 
-from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT, WEAPON_ICON_AREA
-from .types import AmmoInfo, AmmoType, Point, Rectangle
+from .types import Point, Rectangle
 
 
 def get_point_color(image: opencv_image, point: Point) -> int:

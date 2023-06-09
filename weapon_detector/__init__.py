@@ -1,26 +1,26 @@
-import screen_recorder
+from screen_recorder import ImageConsumer as __ImageConsumer
 
 
-class WeaponDetector(screen_recorder.ImageHandler):
-    from image_debugger import ImageDebugger
-    from numpy import ndarray as opencv_image
-    from pyautogui import size as get_screen_size
-    from typing import LiteralString, Tuple
-    from .types import AmmoInfo, Point, Rectangle
+class WeaponDetector(__ImageConsumer):
+    from image_debugger import ImageDebugger as __ImageDebugger
+    from numpy import ndarray as __opencv_image
+    from overrides import override as __override
+    from pyautogui import size as __get_screen_size
+    from typing import LiteralString as __LiteralString, Tuple as __Tuple
+    from weapon_detector.types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
 
-    __debugger: ImageDebugger | None = None
+    __debugger: __ImageDebugger | None = None
     __scaled_shape: (int, int)
-    __weapon_area: Rectangle
-    __weapon_left: AmmoInfo
-    __weapon_right: AmmoInfo
+    __weapon_area: __Rectangle
+    __weapon_left: __AmmoInfo
+    __weapon_right: __AmmoInfo
 
-    def __init__(
-            self,
-            screen_size: Point = get_screen_size(),
-    ):
+    def __init__(self, screen_size: __Point = __get_screen_size()):
         from numpy import round, divide
 
         from .constants import ORIGIN_SCREEN_SIZE
+
+        super().__init__(self.__str__())
 
         print(f"Initializing with screen size: {screen_size}")
         self.__scaled_shape = round(divide(screen_size, screen_size[0] / ORIGIN_SCREEN_SIZE)).astype(int)
@@ -29,7 +29,11 @@ class WeaponDetector(screen_recorder.ImageHandler):
             (self.__scaled_shape[0] - 101, self.__scaled_shape[1] - 45)
         )
 
-    def __call__(self, image: opencv_image):
+    def set_debugger(self, debugger: __ImageDebugger) -> None:
+        self.__debugger = debugger
+
+    @__override
+    def process_image(self, image: __opencv_image) -> None:
         from cv2 import resize, INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT
         from .utils import image_in_rectangle
 
@@ -46,18 +50,15 @@ class WeaponDetector(screen_recorder.ImageHandler):
                 interpolation=INTER_AREA if self.__scaled_shape[0] < image.shape[1] else INTER_CUBIC
             ), self.__weapon_area))
 
-        ammo_info = self.get_ammo_infos(cropped_image)
-        weapon_identity = self.get_weapon_identity(cropped_image, ammo_info)
+        ammo_info = self.__get_ammo_infos(cropped_image)
+        weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
         if self.__debugger is not None:
             ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
             weapon_identity_text = f'    Weapon: {weapon_identity}'
             self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
 
-    def set_debugger(self, debugger: ImageDebugger):
-        self.__debugger = debugger
-
-    def get_ammo_infos(self, image: opencv_image) -> AmmoInfo | None:
+    def __get_ammo_infos(self, image: __opencv_image) -> __AmmoInfo | None:
         from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
         from .types import AmmoInfo, AmmoType
         from .utils import get_point_color
@@ -95,7 +96,40 @@ class WeaponDetector(screen_recorder.ImageHandler):
         else:
             return None
 
-    def get_weapon_eigenvalues(self, image: opencv_image, threshold: float = 0.95) -> Tuple[float, float, float, float]:
+    def __get_weapon_identity(self, image: __opencv_image, ammo_info: __AmmoInfo | None) -> __LiteralString | None:
+        from numpy import abs, array, inf, sum
+
+        from .constants import WEAPON_INFO_DICT
+
+        if ammo_info is None:
+            return None
+        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
+        if weapon_info_list.__len__() == 1:
+            return weapon_info_list[0]["name"]
+
+        eigenvalues = self.__get_weapon_eigenvalues(image)
+
+        if self.__debugger is not None:
+            eigenvalues_text = f'Eigenvalues: {eigenvalues}'
+            self.__debugger.add_texts([eigenvalues_text])
+
+        current_weapon = {
+            "sum": inf,
+            "name": None
+        }
+
+        for weapon_info in weapon_info_list:
+            eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
+            if eigenvalues_diff_sum < current_weapon["sum"]:
+                current_weapon["sum"] = eigenvalues_diff_sum
+                current_weapon["name"] = weapon_info["name"]
+        return current_weapon["name"]
+
+    def __get_weapon_eigenvalues(
+            self,
+            image: __opencv_image,
+            threshold: float = 0.95
+    ) -> __Tuple[float, float, float, float]:
         from cv2 import boundingRect
 
         from .constants import WEAPON_ICON_AREA
@@ -127,32 +161,3 @@ class WeaponDetector(screen_recorder.ImageHandler):
             round(bounding_rectangle[1] / weapon_image.shape[0] * 100, 4),
             round((bounding_rectangle[1] + bounding_rectangle[3]) / weapon_image.shape[0] * 100, 4),
         )
-
-    def get_weapon_identity(self, image: opencv_image, ammo_info: AmmoInfo | None) -> LiteralString | None:
-        from numpy import abs, array, inf, sum
-
-        from .constants import WEAPON_INFO_DICT
-
-        if ammo_info is None:
-            return None
-        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
-        if weapon_info_list.__len__() == 1:
-            return weapon_info_list[0]["name"]
-
-        eigenvalues = self.get_weapon_eigenvalues(image)
-
-        if self.__debugger is not None:
-            eigenvalues_text = f'Eigenvalues: {eigenvalues}'
-            self.__debugger.add_texts([eigenvalues_text])
-
-        current_weapon = {
-            "sum": inf,
-            "name": None
-        }
-
-        for weapon_info in weapon_info_list:
-            eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
-            if eigenvalues_diff_sum < current_weapon["sum"]:
-                current_weapon["sum"] = eigenvalues_diff_sum
-                current_weapon["name"] = weapon_info["name"]
-        return current_weapon["name"]
