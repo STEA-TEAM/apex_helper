@@ -4,11 +4,10 @@ from abc import ABC as __ABC
 class ImageConsumer(__ABC):
     from abc import abstractmethod as __abstractmethod
     from numpy import ndarray as __opencv_image
-    from threading import Event as __Event, Lock as __Lock, Thread as __Thread
+    from threading import Event as __Event, Thread as __Thread
     from typing import LiteralString as __LiteralString
 
     __current_image: __opencv_image | None = None
-    __image_lock: __Lock = __Lock()
     __stop_event: __Event = __Event()
 
     __name: __LiteralString
@@ -40,8 +39,7 @@ class ImageConsumer(__ABC):
         self.__thread_handle.join()
 
     def feed(self, image: __opencv_image) -> None:
-        if not self.__image_lock.locked():
-            self.__current_image = image
+        self.__current_image = image
 
     @__abstractmethod
     def process_image(self, image: __opencv_image) -> None:
@@ -54,16 +52,10 @@ class ImageConsumer(__ABC):
             if self.__stop_event.is_set():
                 break
             if self.__current_image is not None:
-                self.process_image(self.__get_image())
+                self.process_image(self.__current_image)
             else:
                 __sleep(0.001)
         self.__stop_event.clear()
-
-    def __get_image(self) -> __opencv_image:
-        self.__image_lock.acquire()
-        image = self.__current_image.copy()
-        self.__image_lock.release()
-        return image
 
 
 class ImageProducer:
