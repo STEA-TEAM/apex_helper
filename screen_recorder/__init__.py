@@ -10,9 +10,10 @@ class ImageHandler(abc.ABC):
 class ScreenRecorder:
     from dxcam import DXCamera
     from threading import Event, Thread
+    from typing import Callable, Dict, LiteralString
 
     __camera: DXCamera
-    __handler_map: dict[str, callable] = {}
+    __handler_map: Dict[LiteralString, Callable] = {}
     __stop_event: Event = Event()
     __thread_handle: Thread
 
@@ -27,10 +28,10 @@ class ScreenRecorder:
         sleep(1.0)
         print("DxCam initialized")
 
-    def register(self, name, handler: ImageHandler):
+    def register(self, name: LiteralString, handler: ImageHandler):
         self.__handler_map[name] = handler
 
-    def unregister(self, name):
+    def unregister(self, name: LiteralString):
         del self.__handler_map[name]
 
     def start(self):
@@ -51,18 +52,14 @@ class ScreenRecorder:
         destroyAllWindows()
 
     def __capture_screen(self):
-        from cv2 import waitKey
-
         self.__camera.start()
 
         while True:
             image = self.__camera.get_latest_frame()
-            if image is not None:
-                for handler in self.__handler_map.values():
-                    handler(image)
+            for handler in self.__handler_map.values():
+                handler(image)
             if self.__stop_event.is_set():
                 break
-            waitKey(1)
 
         self.__stop_event.clear()
         self.__camera.stop()

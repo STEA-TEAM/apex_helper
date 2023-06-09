@@ -2,13 +2,16 @@ import screen_recorder
 
 
 class WeaponDetector(screen_recorder.ImageHandler):
-    from typing import List
     from datetime import datetime
+    from image_debugger import ImageDebugger
+    from numpy import ndarray as opencv_image
     from pyautogui import size as get_screen_size
-    from .types import Rectangle, AmmoInfo
+    from typing import List, LiteralString
+    from .types import AmmoInfo, Point, Rectangle
 
-    __window_name: str
+    __window_name: LiteralString | None
     __custom_ratio: float
+    __debugger: ImageDebugger | None = None
     __timestamps: List[float] = [datetime.now().timestamp()]
     __scaled_shape: (int, int)
     __weapon_area: Rectangle
@@ -17,9 +20,9 @@ class WeaponDetector(screen_recorder.ImageHandler):
 
     def __init__(
             self,
-            window_name: str,
+            window_name: LiteralString | None = None,
             custom_ratio: float = 1.0,
-            screen_size: tuple[int, int] = get_screen_size(),
+            screen_size: Point = get_screen_size(),
     ):
         from numpy import round, divide
 
@@ -34,7 +37,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
             (self.__scaled_shape[0] - 101, self.__scaled_shape[1] - 45)
         )
 
-    def __call__(self, image):
+    def __call__(self, image: opencv_image):
         from cv2 import resize, INTER_NEAREST
         from .utils import image_in_rectangle, get_ammo_infos, get_weapon_identity
 
@@ -45,10 +48,18 @@ class WeaponDetector(screen_recorder.ImageHandler):
         ), self.__weapon_area)
         ammo_info = get_ammo_infos(cropped_image)
         weapon_identity = get_weapon_identity(cropped_image, ammo_info)
-        if self.__window_name is not None:
-            self.__display_info(cropped_image, ammo_info, weapon_identity)
+        if self.__debugger is not None:
+            self.__debugger.show()
 
-    def __display_info(self, img, ammo_info: AmmoInfo | None, weapon_identity: str | None):
+    def add_debugger(self, debugger: ImageDebugger):
+        self.__debugger = debugger
+
+    def __display_info(
+            self,
+            img: opencv_image,
+            ammo_info: AmmoInfo | None,
+            weapon_identity: LiteralString | None
+    ):
         from cv2 import (
             boundingRect,
             circle,
@@ -56,6 +67,7 @@ class WeaponDetector(screen_recorder.ImageHandler):
             putText,
             rectangle,
             resize,
+            waitKey,
             FONT_HERSHEY_SIMPLEX,
             INTER_LINEAR,
             LINE_AA
@@ -116,3 +128,4 @@ class WeaponDetector(screen_recorder.ImageHandler):
                 interpolation=INTER_LINEAR
             )
         )
+        waitKey(1)

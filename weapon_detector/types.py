@@ -1,8 +1,8 @@
 from enum import Enum
-from typing import TypedDict, TypeAlias
+from typing import LiteralString, Tuple, TypeAlias, TypedDict
 
-Point: TypeAlias = tuple[int, int]
-Rectangle: TypeAlias = tuple[tuple[int, int], tuple[int, int]]
+Point: TypeAlias = Tuple[int, int]
+Rectangle: TypeAlias = Tuple[Tuple[int, int], Tuple[int, int]]
 
 
 class AmmoType(Enum):
@@ -23,5 +23,5 @@ class AmmoInfo(TypedDict):
 
 
 class WeaponInfo(TypedDict):
-    name: str
-    eigenvalues: tuple[float, float, float, float]
+    name: LiteralString
+    eigenvalues: Tuple[float, float, float, float]
