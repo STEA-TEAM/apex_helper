@@ -1,12 +1,23 @@
-from pynput import keyboard
-
+from pynput.keyboard import Controller as KeyController, Key, Listener
+from pynput.mouse import Controller as MouseController, Button
 from image_debugger import ImageDebugger
 from screen_recorder import ImageProducer
 from weapon_detector import WeaponDetector
 
+key_controller = KeyController()
+mouse_controller = MouseController()
+
 
 def on_press(key):
-    if key == keyboard.Key.delete:
+    if key == Key.f7:
+        print("Try send key 4 to the game")
+        key_controller.press('5')
+        key_controller.release('5')
+    if key == Key.f8:
+        print("Try send mouse move to the game")
+        from ctypes import windll
+        windll.user32.mouse_event(1, 10, 0, 0, 0)
+    if key == Key.delete:
         image_producer.stop()
         return
 
@@ -19,7 +30,7 @@ if __name__ == '__main__':
     image_producer.register(weapon_detector)
     weapon_detector.set_debugger(image_debugger)
 
-    keyboard.Listener(on_press=on_press).start()
+    Listener(on_press=on_press).start()
 
     print("Press delete to stop")
 
