@@ -15,8 +15,7 @@ def on_press(key):
         key_controller.release('5')
     if key == Key.f8:
         print("Try send mouse move to the game")
-        from ctypes import windll
-        windll.user32.mouse_event(1, 10, 0, 0, 0)
+
     if key == Key.delete:
         image_producer.stop()
         return
