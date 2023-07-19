@@ -20,7 +20,7 @@ class WeaponDetector(__ImageConsumer):
 
         from .constants import ORIGIN_SCREEN_SIZE
 
-        super().__init__(self.__str__())
+        super().__init__(self.__class__.__name__)
 
         print(f"Initializing with screen size: {screen_size}")
         self.__scaled_shape = round(divide(screen_size, screen_size[0] / ORIGIN_SCREEN_SIZE)).astype(int)
@@ -31,6 +31,7 @@ class WeaponDetector(__ImageConsumer):
 
     def set_debugger(self, debugger: __ImageDebugger) -> None:
         self.__debugger = debugger
+
 
     @__override
     def process_image(self, image: __opencv_image) -> None:

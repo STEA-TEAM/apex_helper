@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import IntFlag
 from typing import List, Tuple, TypeAlias
 
 
-class MouseEventFlag(Enum):
+class MouseEventFlag(IntFlag):
     Move = 0x0001
     LeftDown = 0x0002
     LeftUp = 0x0004
@@ -17,7 +17,7 @@ class MouseEventFlag(Enum):
     AbsolutePosition = 0x8000
 
 
-class MouseSideButton(Enum):
+class MouseSideButton(IntFlag):
     Front = 0x0001
     Back = 0x0002
 
