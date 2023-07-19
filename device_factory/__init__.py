@@ -46,7 +46,6 @@ class MouseEmulator:
                 if self.__stop_event.is_set():
                     break
                 (event_flags, point, data, delay) = self.__event_queue[0]
-                print(reduce(lambda x, y: x | y, event_flags))
                 windll.user32.mouse_event(reduce(lambda x, y: x | y, event_flags), point[0], point[1], data, 0)
                 sleep(delay)
                 self.__event_queue.pop(0)
