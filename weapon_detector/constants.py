@@ -1,5 +1,4 @@
 from typing import Dict, List
-
 from .types import AmmoType, AmmoInfo, WeaponInfo, Point, Rectangle
 
 ORIGIN_SCREEN_SIZE = 3840

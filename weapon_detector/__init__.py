@@ -1,4 +1,25 @@
-from screen_recorder import ImageConsumer as __ImageConsumer
+from abc import ABC as __ABC
+from image_producer import ImageConsumer as __ImageConsumer
+
+
+class WeaponProcessor(__ABC):
+    from typing import LiteralString as __LiteralString
+    from .types import AmmoInfo as __AmmoInfo
+
+    __current_ammo: __AmmoInfo | None = None
+    __current_weapon: str | None = None
+    __name: __LiteralString
+
+    def __init__(self, name: __LiteralString):
+        self.__name = name
+        return
+
+    def name(self) -> __LiteralString:
+        return self.__name
+
+    def update(self, ammo: __AmmoInfo, weapon: str) -> None:
+        self.__current_ammo = ammo
+        self.__current_weapon = weapon
 
 
 class WeaponDetector(__ImageConsumer):
@@ -6,10 +27,11 @@ class WeaponDetector(__ImageConsumer):
     from numpy import ndarray as __opencv_image
     from overrides import override as __override
     from pyautogui import size as __get_screen_size
-    from typing import LiteralString as __LiteralString, Tuple as __Tuple
-    from weapon_detector.types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
+    from typing import Dict as __Dict, LiteralString as __LiteralString, Tuple as __Tuple
+    from .types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
 
     __debugger: __ImageDebugger | None = None
+    __processor_map: __Dict[__LiteralString, WeaponProcessor] = {}
     __scaled_shape: (int, int)
     __weapon_area: __Rectangle
     __weapon_left: __AmmoInfo
@@ -17,7 +39,6 @@ class WeaponDetector(__ImageConsumer):
 
     def __init__(self, screen_size: __Point = __get_screen_size()):
         from numpy import round, divide
-
         from .constants import ORIGIN_SCREEN_SIZE
 
         super().__init__(self.__class__.__name__)
@@ -32,23 +53,28 @@ class WeaponDetector(__ImageConsumer):
     def set_debugger(self, debugger: __ImageDebugger) -> None:
         self.__debugger = debugger
 
+    def register(self, processor: WeaponProcessor) -> None:
+        self.__processor_map[processor.name()] = processor
+
+    def unregister(self, name: __LiteralString) -> None:
+        del self.__processor_map[name]
 
     @__override
-    def process_image(self, image: __opencv_image) -> None:
+    def process(self) -> None:
         from cv2 import resize, INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT
         from .utils import image_in_rectangle
 
         cropped_image = image_in_rectangle(resize(
-            image,
+            self._current_image,
             self.__scaled_shape,
             interpolation=INTER_NEAREST_EXACT
         ), self.__weapon_area)
 
         if self.__debugger is not None:
             self.__debugger.set_image(image_in_rectangle(resize(
-                image,
+                self._current_image,
                 self.__scaled_shape,
-                interpolation=INTER_AREA if self.__scaled_shape[0] < image.shape[1] else INTER_CUBIC
+                interpolation=INTER_AREA if self.__scaled_shape[0] < self._current_image.shape[1] else INTER_CUBIC
             ), self.__weapon_area))
 
         ammo_info = self.__get_ammo_infos(cropped_image)
@@ -58,6 +84,8 @@ class WeaponDetector(__ImageConsumer):
             weapon_identity_text = f'    Weapon: {weapon_identity}'
             self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
+        for processor in self.__processor_map.values():
+            processor.update(ammo_info, weapon_identity)
 
     def __get_ammo_infos(self, image: __opencv_image) -> __AmmoInfo | None:
         from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
@@ -99,7 +127,6 @@ class WeaponDetector(__ImageConsumer):
 
     def __get_weapon_identity(self, image: __opencv_image, ammo_info: __AmmoInfo | None) -> __LiteralString | None:
         from numpy import abs, array, inf, sum
-
         from .constants import WEAPON_INFO_DICT
 
         if ammo_info is None:
@@ -132,7 +159,6 @@ class WeaponDetector(__ImageConsumer):
             threshold: float = 0.95
     ) -> __Tuple[float, float, float, float]:
         from cv2 import boundingRect
-
         from .constants import WEAPON_ICON_AREA
         from .utils import image_in_rectangle, image_relative_diff
 

@@ -3,10 +3,10 @@ from device_factory.types import MouseEventFlag
 
 class MouseEmulator:
     from threading import Event as __Event, Thread as __Thread
-    from typing import List
+    from typing import List as __List
     from .types import MouseEvent as __MouseEvent
 
-    __event_queue: List[__MouseEvent] = []
+    __event_queue: __List[__MouseEvent] = []
     __stop_event: __Event = __Event()
     __thread_handle: __Thread
 
@@ -30,10 +30,10 @@ class MouseEmulator:
         self.__stop_event.set()
         self.__thread_handle.join()
 
-    def push_events(self, events: List[__MouseEvent]) -> None:
+    def push_events(self, events: __List[__MouseEvent]) -> None:
         self.__event_queue += events
 
-    def replace_event(self, events: List[__MouseEvent], force: bool) -> None:
+    def replace_event(self, events: __List[__MouseEvent], force: bool) -> None:
         self.__event_queue = events if force else [self.__event_queue[0]] + events
 
     def __process_mouse_events(self):

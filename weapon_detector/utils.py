@@ -1,5 +1,4 @@
 from numpy import ndarray as opencv_image, abs, int16, max, min, sum, uint8, where
-
 from .types import Point, Rectangle
 
 

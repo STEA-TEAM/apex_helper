@@ -7,10 +7,9 @@ class ImageConsumer(__ABC):
     from threading import Event as __Event, Thread as __Thread
     from typing import LiteralString as __LiteralString
 
-    __current_image: __opencv_image | None = None
-    __stop_event: __Event = __Event()
-
+    _current_image: __opencv_image | None = None
     __name: __LiteralString
+    __stop_event: __Event = __Event()
     __thread_handle: __Thread
 
     def __init__(self, name: __LiteralString):
@@ -39,10 +38,10 @@ class ImageConsumer(__ABC):
         self.__thread_handle.join()
 
     def feed(self, image: __opencv_image) -> None:
-        self.__current_image = image
+        self._current_image = image
 
     @__abstractmethod
-    def process_image(self, image: __opencv_image) -> None:
+    def process(self) -> None:
         pass
 
     def __run(self) -> None:
@@ -51,8 +50,8 @@ class ImageConsumer(__ABC):
         while True:
             if self.__stop_event.is_set():
                 break
-            if self.__current_image is not None:
-                self.process_image(self.__current_image)
+            if self._current_image is not None:
+                self.process()
             else:
                 __sleep(0.001)
         self.__stop_event.clear()
@@ -61,7 +60,6 @@ class ImageConsumer(__ABC):
 class ImageProducer:
     from threading import Event as __Event, Thread as __Thread
     from typing import Dict as __Dict, LiteralString as __LiteralString
-
     from .dxshot import DXCamera as __DXCamera
 
     __camera: __DXCamera
@@ -72,7 +70,6 @@ class ImageProducer:
     def __init__(self):
         from time import sleep
         from threading import Thread
-
         from .dxshot import create
 
         print("Initializing DxCam...")
