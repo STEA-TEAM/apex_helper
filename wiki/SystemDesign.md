@@ -1,9 +1,6 @@
 ## Overview
 
 ```mermaid
----
-title: Apex Helper
----
 classDiagram
     direction TB
     class ImageProvider {
