@@ -1,12 +1,12 @@
 from image_producer import ImageConsumer as __ImageConsumer
 
 
-class WeaponProcessor:
+class WeaponSubscriber:
     from typing import LiteralString as __LiteralString
     from .types import AmmoInfo as __AmmoInfo
 
-    __current_ammo: __AmmoInfo | None = None
-    __current_weapon: str | None = None
+    _current_ammo: __AmmoInfo | None = None
+    _current_weapon: str | None = None
     __name: __LiteralString
 
     def __init__(self, name: __LiteralString):
@@ -16,9 +16,9 @@ class WeaponProcessor:
     def name(self) -> __LiteralString:
         return self.__name
 
-    def feed(self, ammo: __AmmoInfo, weapon: str) -> None:
-        self.__current_ammo = ammo
-        self.__current_weapon = weapon
+    def notify(self, ammo: __AmmoInfo, weapon: str) -> None:
+        self._current_ammo = ammo
+        self._current_weapon = weapon
 
 
 class WeaponDetector(__ImageConsumer):
@@ -30,8 +30,8 @@ class WeaponDetector(__ImageConsumer):
     from .types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
 
     __debugger: __ImageDebugger | None = None
-    __processors: __Dict[__LiteralString, WeaponProcessor] = {}
     __scaled_shape: (int, int)
+    __subscribers: __Dict[__LiteralString, WeaponSubscriber] = {}
     __weapon_area: __Rectangle
     __weapon_left: __AmmoInfo
     __weapon_right: __AmmoInfo
@@ -52,11 +52,11 @@ class WeaponDetector(__ImageConsumer):
     def set_debugger(self, debugger: __ImageDebugger) -> None:
         self.__debugger = debugger
 
-    def register(self, processor: WeaponProcessor) -> None:
-        self.__processors[processor.name()] = processor
+    def register(self, subscriber: WeaponSubscriber) -> None:
+        self.__subscribers[subscriber.name()] = subscriber
 
     def unregister(self, name: __LiteralString) -> None:
-        del self.__processors[name]
+        del self.__subscribers[name]
 
     @__override
     def process(self) -> None:

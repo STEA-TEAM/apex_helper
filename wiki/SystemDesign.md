@@ -24,18 +24,18 @@ classDiagram
     }
     class WeaponDetector {
         -ImageDebugger __debugger
-        -Dict[str, WeaponProcessor] __processors
+        -Dict[str, WeaponSubscriber] __subscribers
         +@override process()
     }
     ImageConsumer <|-- EnemyDetector
     ImageConsumer <|-- ItemDetector
     ImageConsumer <|-- WeaponDetector
-    class WeaponProcessor {
+    class WeaponSubscriber {
         #AmmoInfo _current_ammo_info
         #str _current_weapon_identity
-        +feed(ammo_info: AmmoInfo, weapon_identity: str)
+        +notify(ammo_info: AmmoInfo, weapon_identity: str)
     }
-    WeaponDetector *-- WeaponProcessor
+    WeaponDetector *-- WeaponSubscriber
 
     class InputProvider {
         -Listener __listener
@@ -55,7 +55,7 @@ classDiagram
         -Dict[str, DeviceAdapter] __adapters
         +@override process()
     }
-    WeaponProcessor <|-- RecoilSuppressor
+    WeaponSubscriber <|-- RecoilSuppressor
     InputConsumer <|-- RecoilSuppressor
     class DeviceAdapter {
         <<Abstract>>
