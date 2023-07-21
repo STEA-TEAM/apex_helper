@@ -6,7 +6,7 @@ class MouseEmulator:
     from typing import List as __List
     from .types import MouseEvent as __MouseEvent
 
-    __event_queue: __List[__MouseEvent] = []
+    __events: __List[__MouseEvent] = []
     __stop_event: __Event = __Event()
     __thread_handle: __Thread
 
@@ -31,10 +31,10 @@ class MouseEmulator:
         self.__thread_handle.join()
 
     def push_events(self, events: __List[__MouseEvent]) -> None:
-        self.__event_queue += events
+        self.__events += events
 
-    def replace_event(self, events: __List[__MouseEvent], force: bool) -> None:
-        self.__event_queue = events if force else [self.__event_queue[0]] + events
+    def replace_events(self, events: __List[__MouseEvent], force: bool) -> None:
+        self.__events = events if force else [self.__events[0]] + events
 
     def __process_mouse_events(self):
         from ctypes import windll
@@ -42,13 +42,13 @@ class MouseEmulator:
         from time import sleep
 
         while True:
-            while len(self.__event_queue) > 0:
+            while len(self.__events) > 0:
                 if self.__stop_event.is_set():
                     break
-                (event_flags, point, data, delay) = self.__event_queue[0]
+                (event_flags, point, data, delay) = self.__events[0]
                 windll.user32.mouse_event(reduce(lambda x, y: x | y, event_flags), point[0], point[1], data, 0)
                 sleep(delay)
-                self.__event_queue.pop(0)
+                self.__events.pop(0)
             if self.__stop_event.is_set():
                 break
             sleep(0.01)

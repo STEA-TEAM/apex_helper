@@ -1,8 +1,7 @@
-from abc import ABC as __ABC
 from image_producer import ImageConsumer as __ImageConsumer
 
 
-class WeaponProcessor(__ABC):
+class WeaponProcessor:
     from typing import LiteralString as __LiteralString
     from .types import AmmoInfo as __AmmoInfo
 
@@ -17,7 +16,7 @@ class WeaponProcessor(__ABC):
     def name(self) -> __LiteralString:
         return self.__name
 
-    def update(self, ammo: __AmmoInfo, weapon: str) -> None:
+    def feed(self, ammo: __AmmoInfo, weapon: str) -> None:
         self.__current_ammo = ammo
         self.__current_weapon = weapon
 
@@ -31,7 +30,7 @@ class WeaponDetector(__ImageConsumer):
     from .types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
 
     __debugger: __ImageDebugger | None = None
-    __processor_map: __Dict[__LiteralString, WeaponProcessor] = {}
+    __processors: __Dict[__LiteralString, WeaponProcessor] = {}
     __scaled_shape: (int, int)
     __weapon_area: __Rectangle
     __weapon_left: __AmmoInfo
@@ -54,10 +53,10 @@ class WeaponDetector(__ImageConsumer):
         self.__debugger = debugger
 
     def register(self, processor: WeaponProcessor) -> None:
-        self.__processor_map[processor.name()] = processor
+        self.__processors[processor.name()] = processor
 
     def unregister(self, name: __LiteralString) -> None:
-        del self.__processor_map[name]
+        del self.__processors[name]
 
     @__override
     def process(self) -> None:
@@ -84,8 +83,8 @@ class WeaponDetector(__ImageConsumer):
             weapon_identity_text = f'    Weapon: {weapon_identity}'
             self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
-        for processor in self.__processor_map.values():
-            processor.update(ammo_info, weapon_identity)
+        for processor in self.__processors.values():
+            processor.feed(ammo_info, weapon_identity)
 
     def __get_ammo_infos(self, image: __opencv_image) -> __AmmoInfo | None:
         from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
