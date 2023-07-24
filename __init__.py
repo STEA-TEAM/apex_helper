@@ -2,9 +2,9 @@ from pynput.keyboard import Key, Listener
 
 from device_factory import MouseEmulator
 from image_debugger import ImageDebugger
-from image_producer import ImageProducer
+from image_factory import ImageProducer
 from recoil_suppressor import RecoilSuppressor
-from weapon_detector import WeaponDetector
+from weapon_factory import WeaponBroadcaster
 
 
 def on_press(key):
@@ -18,11 +18,11 @@ if __name__ == '__main__':
     image_debugger = ImageDebugger("Weapon Detector")
     image_producer = ImageProducer()
     recoil_suppressor = RecoilSuppressor()
-    weapon_detector = WeaponDetector()
+    weapon_broadcaster = WeaponBroadcaster()
 
-    image_producer.register(weapon_detector)
-    weapon_detector.set_debugger(image_debugger)
-    weapon_detector.register(recoil_suppressor)
+    image_producer.register(weapon_broadcaster)
+    weapon_broadcaster.set_debugger(image_debugger)
+    weapon_broadcaster.register(recoil_suppressor)
 
     Listener(on_press=on_press).start()
 

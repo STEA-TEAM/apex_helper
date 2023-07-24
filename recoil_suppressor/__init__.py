@@ -1,4 +1,4 @@
-from weapon_detector import WeaponSubscriber as __WeaponSubscriber
+from weapon_factory import WeaponSubscriber as __WeaponSubscriber
 
 
 class RecoilSuppressor(__WeaponSubscriber):

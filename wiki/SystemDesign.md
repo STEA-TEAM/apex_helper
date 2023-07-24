@@ -16,26 +16,26 @@ classDiagram
     }
     ImageConsumer <.. ImageConsumer: Thread Loop
     ImageProvider *-- ImageConsumer
-    class EnemyDetector {
+    class EnemyBroadcaster {
         +@override process()
     }
-    class ItemDetector {
+    class ItemBroadcaster {
         +@override process()
     }
-    class WeaponDetector {
+    class WeaponBroadcaster {
         -ImageDebugger __debugger
         -Dict[str, WeaponSubscriber] __subscribers
         +@override process()
     }
-    ImageConsumer <|-- EnemyDetector
-    ImageConsumer <|-- ItemDetector
-    ImageConsumer <|-- WeaponDetector
+    ImageConsumer <|-- EnemyBroadcaster
+    ImageConsumer <|-- ItemBroadcaster
+    ImageConsumer <|-- WeaponBroadcaster
     class WeaponSubscriber {
         #AmmoInfo _current_ammo_info
         #str _current_weapon_identity
         +notify(ammo_info: AmmoInfo, weapon_identity: str)
     }
-    WeaponDetector *-- WeaponSubscriber
+    WeaponBroadcaster *-- WeaponSubscriber
 
     class InputProvider {
         -Listener __listener
@@ -87,3 +87,14 @@ classDiagram
     DeviceAdapter <|-- MouseCommunicator
     DeviceAdapter <|-- KeyboardCommunicator
 ```
+
+## References
+
+### Tools
+
+- [Apex Legends Calculator](https://jscalc.io/embed/Q1gf45VCY4tmm2dq)
+- [Mouse Sensitivity Calculator](https://www.mouse-sensitivity.com/?share=598ee2e60b31d9226578d809f7380a09)
+
+### Articles
+
+- [Apex Legends Calculator blog](https://jscalc-blog.com/apex-legends-calculator/)

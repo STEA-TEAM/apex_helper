@@ -1,68 +1,48 @@
-from image_producer import ImageConsumer as __ImageConsumer
+from .constants import AMMO_COLOR_DICT, LEFT_SOLT, ORIGIN_SCREEN_SIZE, RIGHT_SOLT, WEAPON_ICON_AREA, WEAPON_INFO_DICT
+from .types import AmmoInfo, AmmoType, Point, Rectangle
+from .utils import image_in_rectangle, image_relative_diff, get_point_color
+from .weapon_subscriber import WeaponSubscriber
+
+from cv2 import INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT, boundingRect, resize
+from image_debugger import ImageDebugger
+from image_factory import ImageConsumer
+from numpy import ndarray as opencv_image
+from overrides import override
+from pyautogui import size as get_screen_size
+from typing import Dict, LiteralString, Tuple
+
+import numpy as np
 
 
-class WeaponSubscriber:
-    from typing import LiteralString as __LiteralString
-    from .types import AmmoInfo as __AmmoInfo
-
-    _current_ammo: __AmmoInfo | None = None
-    _current_weapon: str | None = None
-    __name: __LiteralString
-
-    def __init__(self, name: __LiteralString):
-        self.__name = name
-        return
-
-    def name(self) -> __LiteralString:
-        return self.__name
-
-    def notify(self, ammo: __AmmoInfo, weapon: str) -> None:
-        self._current_ammo = ammo
-        self._current_weapon = weapon
-
-
-class WeaponDetector(__ImageConsumer):
-    from image_debugger import ImageDebugger as __ImageDebugger
-    from numpy import ndarray as __opencv_image
-    from overrides import override as __override
-    from pyautogui import size as __get_screen_size
-    from typing import Dict as __Dict, LiteralString as __LiteralString, Tuple as __Tuple
-    from .types import AmmoInfo as __AmmoInfo, Point as __Point, Rectangle as __Rectangle
-
-    __debugger: __ImageDebugger | None = None
+class WeaponBroadcaster(ImageConsumer):
+    __debugger: ImageDebugger | None = None
     __scaled_shape: (int, int)
-    __subscribers: __Dict[__LiteralString, WeaponSubscriber] = {}
-    __weapon_area: __Rectangle
-    __weapon_left: __AmmoInfo
-    __weapon_right: __AmmoInfo
+    __subscribers: Dict[LiteralString, WeaponSubscriber] = {}
+    __weapon_area: Rectangle
+    __weapon_left: AmmoInfo
+    __weapon_right: AmmoInfo
 
-    def __init__(self, screen_size: __Point = __get_screen_size()):
-        from numpy import round, divide
-        from .constants import ORIGIN_SCREEN_SIZE
-
+    def __init__(self, screen_size: Point = get_screen_size()):
         super().__init__(self.__class__.__name__)
 
         print(f"Initializing with screen size: {screen_size}")
-        self.__scaled_shape = round(divide(screen_size, screen_size[0] / ORIGIN_SCREEN_SIZE)).astype(int)
+        self.__scaled_shape = np.round(np.divide(screen_size, screen_size[0] / ORIGIN_SCREEN_SIZE)).astype(int)
         self.__weapon_area = (
             (self.__scaled_shape[0] - 832, self.__scaled_shape[1] - 252),
             (self.__scaled_shape[0] - 101, self.__scaled_shape[1] - 45)
         )
 
-    def set_debugger(self, debugger: __ImageDebugger) -> None:
+    def set_debugger(self, debugger: ImageDebugger) -> None:
         self.__debugger = debugger
 
     def register(self, subscriber: WeaponSubscriber) -> None:
         self.__subscribers[subscriber.name()] = subscriber
 
-    def unregister(self, name: __LiteralString) -> None:
+    def unregister(self, name: LiteralString) -> None:
         del self.__subscribers[name]
 
-    @__override
+    @override
     def process(self) -> None:
-        from cv2 import resize, INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT
-        from .utils import image_in_rectangle
-
         cropped_image = image_in_rectangle(resize(
             self._current_image,
             self.__scaled_shape,
@@ -83,14 +63,10 @@ class WeaponDetector(__ImageConsumer):
             weapon_identity_text = f'    Weapon: {weapon_identity}'
             self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
-        for processor in self.__processors.values():
-            processor.feed(ammo_info, weapon_identity)
+        for subscriber in self.__subscribers.values():
+            subscriber.notify(ammo_info, weapon_identity)
 
-    def __get_ammo_infos(self, image: __opencv_image) -> __AmmoInfo | None:
-        from .constants import AMMO_COLOR_DICT, LEFT_SOLT, RIGHT_SOLT
-        from .types import AmmoInfo, AmmoType
-        from .utils import get_point_color
-
+    def __get_ammo_infos(self, image: opencv_image) -> AmmoInfo | None:
         weapon_left: AmmoInfo
         weapon_right: AmmoInfo
 
@@ -124,10 +100,7 @@ class WeaponDetector(__ImageConsumer):
         else:
             return None
 
-    def __get_weapon_identity(self, image: __opencv_image, ammo_info: __AmmoInfo | None) -> __LiteralString | None:
-        from numpy import abs, array, inf, sum
-        from .constants import WEAPON_INFO_DICT
-
+    def __get_weapon_identity(self, image: opencv_image, ammo_info: AmmoInfo | None) -> LiteralString | None:
         if ammo_info is None:
             return None
         weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
@@ -141,12 +114,12 @@ class WeaponDetector(__ImageConsumer):
             self.__debugger.add_texts([eigenvalues_text])
 
         current_weapon = {
-            "sum": inf,
+            "sum": np.inf,
             "name": None
         }
 
         for weapon_info in weapon_info_list:
-            eigenvalues_diff_sum = sum(abs(array(eigenvalues) - array(weapon_info["eigenvalues"])))
+            eigenvalues_diff_sum = np.sum(np.abs(np.array(eigenvalues) - np.array(weapon_info["eigenvalues"])))
             if eigenvalues_diff_sum < current_weapon["sum"]:
                 current_weapon["sum"] = eigenvalues_diff_sum
                 current_weapon["name"] = weapon_info["name"]
@@ -154,13 +127,9 @@ class WeaponDetector(__ImageConsumer):
 
     def __get_weapon_eigenvalues(
             self,
-            image: __opencv_image,
+            image: opencv_image,
             threshold: float = 0.95
-    ) -> __Tuple[float, float, float, float]:
-        from cv2 import boundingRect
-        from .constants import WEAPON_ICON_AREA
-        from .utils import image_in_rectangle, image_relative_diff
-
+    ) -> Tuple[float, float, float, float]:
         weapon_image = image_in_rectangle(image, WEAPON_ICON_AREA)
         weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
         bounding_rectangle = boundingRect(weapon_image)
