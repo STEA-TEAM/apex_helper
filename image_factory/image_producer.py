@@ -1,4 +1,4 @@
-from .dxshot import DXCamera, create
+from .dxshot import DXCamera, create, device_info, output_info
 from .image_consumer import ImageConsumer
 
 from threading import Event, Thread
@@ -14,7 +14,9 @@ class ImageProducer:
 
     def __init__(self):
         print("Initializing DxCam...")
-        self.__camera = create(output_idx=0, output_color="BGR")
+        print(device_info())
+        print(output_info())
+        self.__camera = create(output_color="BGR")
         self.__thread_handle = Thread(target=self.__capture_screen)
         sleep(1.0)
         print("DxCam initialized")
@@ -46,6 +48,7 @@ class ImageProducer:
             consumer.stop()
 
     def __capture_screen(self) -> None:
+        import cv2
         self.__camera.start()
         while True:
             if self.__stop_event.is_set():
