@@ -1,5 +1,11 @@
-from enum import IntFlag
-from typing import List, Tuple, TypeAlias
+from enum import Enum, IntFlag
+from pynput import keyboard
+from typing import List, LiteralString, Tuple, TypeAlias
+
+
+class DeviceType(Enum):
+    Mouse = "Mouse"
+    Keyboard = "Keyboard"
 
 
 class MouseEventFlag(IntFlag):
@@ -23,4 +29,6 @@ class MouseSideButton(IntFlag):
 
 
 Point: TypeAlias = Tuple[int, int]
-MouseEvent: TypeAlias = Tuple[List[MouseEventFlag], Point, MouseSideButton | int, float]
+MouseEvent: TypeAlias = Tuple[List[MouseEventFlag], Point, MouseSideButton | int]
+KeyboardEvent: TypeAlias = List[Tuple[keyboard.Key | LiteralString, bool]]
+DeviceEvent: TypeAlias = MouseEvent | KeyboardEvent

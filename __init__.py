@@ -1,6 +1,6 @@
 from pynput.keyboard import Key, Listener
 
-from device_factory import MouseEmulator
+from device_adapters import EmulateAdapter
 from image_debugger import ImageDebugger
 from image_factory import ImageProducer
 from recoil_suppressor import RecoilSuppressor
@@ -14,7 +14,7 @@ def on_press(key):
 
 
 if __name__ == '__main__':
-    mouse_emulator = MouseEmulator()
+    emulate_emulator = EmulateAdapter()
     image_debugger = ImageDebugger("Weapon Detector")
     image_producer = ImageProducer()
     recoil_suppressor = RecoilSuppressor()

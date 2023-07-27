@@ -1,13 +1,13 @@
 from abc import ABC, abstractmethod
 from threading import Event, Thread
 from time import sleep
-from typing import LiteralString
+from typing import LiteralString, Tuple
 
-from .types import InputEvent
+from .types import InputEvent, InputType
 
 
 class InputConsumer(ABC):
-    _current_input_event: InputEvent | None = None
+    _current_input_event: Tuple[InputType, InputEvent] | None = None
     __name: LiteralString
     __stop_event: Event = Event()
     __thread_handle: Thread
@@ -31,8 +31,8 @@ class InputConsumer(ABC):
         self.__stop_event.set()
         self.__thread_handle.join()
 
-    def feed(self, input_event: InputEvent) -> None:
-        self._current_input_event = input_event
+    def feed(self, input_type: InputType, input_event: InputEvent) -> None:
+        self._current_input_event = (input_type, input_event)
 
     @abstractmethod
     def process(self) -> None:

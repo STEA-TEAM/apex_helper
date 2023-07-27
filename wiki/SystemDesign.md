@@ -52,40 +52,29 @@ classDiagram
     InputProvider *-- InputConsumer
 
     class RecoilSuppressor {
-        -Dict[str, DeviceAdapter] __adapters
+        -Dict[str, BaseAdapter] __adapters
         +@override process()
     }
     WeaponSubscriber <|-- RecoilSuppressor
     InputConsumer <|-- RecoilSuppressor
-    class DeviceAdapter {
+    class BaseAdapter {
         <<Abstract>>
-        -List[DeviceEvent] __events
-        +push_events(events: List[DeviceEvent])
-        +replace_events(events: List[DeviceEvent], force: bool)
-        +@abstract process()
+        -List[Tuple[DeviceType, DeviceEvent, float]] __events
+        +push_events(events: List[Tuple[DeviceType, DeviceEvent, float]])
+        +replace_events(events: List[Tuple[DeviceType, DeviceEvent, float]], force: bool)
+        +@abstract process(device_type: DeviceType, device_event: DeviceEvent)
     }
-    DeviceAdapter <.. DeviceAdapter: Thread Loop
-    RecoilSuppressor *-- DeviceAdapter
-    class MouseEmulator {
-        -MouseController __mouse
+    BaseAdapter <.. BaseAdapter: Thread Loop
+    RecoilSuppressor *-- BaseAdapter
+    class EmulateAdapter {
         +@override process()
     }
-    class KeyboardEmulator {
-        -KeyboardController __keyboard
-        +@override process()
-    }
-    class MouseCommunicator {
+    class HidAdapter {
         -HidDevice __hid
         +@override process()
     }
-    class KeyboardCommunicator {
-        -HidDevice __hid
-        +@override process()
-    }
-    DeviceAdapter <|-- MouseEmulator
-    DeviceAdapter <|-- KeyboardEmulator
-    DeviceAdapter <|-- MouseCommunicator
-    DeviceAdapter <|-- KeyboardCommunicator
+    BaseAdapter <|-- EmulateAdapter
+    BaseAdapter <|-- HidAdapter
 ```
 
 ## References

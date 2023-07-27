@@ -1,8 +1,8 @@
+from pynput import mouse, keyboard
 from typing import Dict, LiteralString
 
-from pynput import mouse, keyboard
-
 from .input_consumer import InputConsumer
+from .types import InputType
 
 
 class InputProducer:
@@ -46,23 +46,29 @@ class InputProducer:
     def __on_move(self, x, y):
         if not self.__is_running:
             return
-        mouse_event = {
-            "x": x,
-            "y": y
-        }
+        for consumer in self.__consumer_map.values():
+            consumer.feed(InputType.MouseMove, {"x": x, "y": y})
 
     def __on_click(self, x, y, button, pressed):
         if not self.__is_running:
             return
+        for consumer in self.__consumer_map.values():
+            consumer.feed(InputType.MouseClick, {"x": x, "y": y, "button": button, "pressed": pressed})
 
     def __on_scroll(self, x, y, dx, dy):
         if not self.__is_running:
             return
+        for consumer in self.__consumer_map.values():
+            consumer.feed(InputType.MouseScroll, {"x": x, "y": y, "dx": dx, "dy": dy})
 
     def __on_press(self, key):
         if not self.__is_running:
             return
+        for consumer in self.__consumer_map.values():
+            consumer.feed(InputType.KeyPress, {"key": key})
 
     def __on_release(self, key):
         if not self.__is_running:
             return
+        for consumer in self.__consumer_map.values():
+            consumer.feed(InputType.KeyRelease, {"key": key})
