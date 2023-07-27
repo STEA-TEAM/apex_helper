@@ -1,13 +1,13 @@
 from pynput import mouse, keyboard
 from typing import Dict, LiteralString
 
-from .input_consumer import InputConsumer
+from .input_subscriber import InputSubscriber
 from .types import InputType
 
 
-class InputProducer:
+class InputPublisher:
     __is_running: bool = False
-    __consumer_map: Dict[LiteralString, InputConsumer] = {}
+    __consumer_map: Dict[LiteralString, InputSubscriber] = {}
     __mouse_listener: mouse.Listener
     __keyboard_listener: keyboard.Listener
 
@@ -47,28 +47,28 @@ class InputProducer:
         if not self.__is_running:
             return
         for consumer in self.__consumer_map.values():
-            consumer.feed(InputType.MouseMove, {"x": x, "y": y})
+            consumer.notify(InputType.MouseMove, {"x": x, "y": y})
 
     def __on_click(self, x, y, button, pressed):
         if not self.__is_running:
             return
         for consumer in self.__consumer_map.values():
-            consumer.feed(InputType.MouseClick, {"x": x, "y": y, "button": button, "pressed": pressed})
+            consumer.notify(InputType.MouseClick, {"x": x, "y": y, "button": button, "pressed": pressed})
 
     def __on_scroll(self, x, y, dx, dy):
         if not self.__is_running:
             return
         for consumer in self.__consumer_map.values():
-            consumer.feed(InputType.MouseScroll, {"x": x, "y": y, "dx": dx, "dy": dy})
+            consumer.notify(InputType.MouseScroll, {"x": x, "y": y, "dx": dx, "dy": dy})
 
     def __on_press(self, key):
         if not self.__is_running:
             return
         for consumer in self.__consumer_map.values():
-            consumer.feed(InputType.KeyPress, {"key": key})
+            consumer.notify(InputType.KeyPress, {"key": key})
 
     def __on_release(self, key):
         if not self.__is_running:
             return
         for consumer in self.__consumer_map.values():
-            consumer.feed(InputType.KeyRelease, {"key": key})
+            consumer.notify(InputType.KeyRelease, {"key": key})

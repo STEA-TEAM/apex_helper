@@ -17,6 +17,9 @@ class BaseAdapter(ABC):
         self.__thread_handle = Thread(target=self.__consume)
         self.__thread_handle.start()
 
+    def name(self) -> LiteralString:
+        return self.__name
+
     def start(self) -> None:
         if self.__is_running:
             print(f"{self.__class__.__name__} is already running")
