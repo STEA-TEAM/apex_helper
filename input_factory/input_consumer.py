@@ -3,11 +3,11 @@ from threading import Event, Thread
 from time import sleep
 from typing import LiteralString
 
-from numpy import ndarray as opencv_image
+from .types import InputEvent
 
 
-class ImageConsumer(ABC):
-    _current_image: opencv_image | None = None
+class InputConsumer(ABC):
+    _current_input_event: InputEvent | None = None
     __name: LiteralString
     __stop_event: Event = Event()
     __thread_handle: Thread
@@ -15,9 +15,6 @@ class ImageConsumer(ABC):
     def __init__(self, name: LiteralString):
         self.__name = name
         self.__thread_handle = Thread(target=self.__run)
-
-    def name(self) -> LiteralString:
-        return self.__name
 
     def start(self) -> None:
         if self.__thread_handle.is_alive():
@@ -34,8 +31,8 @@ class ImageConsumer(ABC):
         self.__stop_event.set()
         self.__thread_handle.join()
 
-    def feed(self, image: opencv_image) -> None:
-        self._current_image = image
+    def feed(self, input_event: InputEvent) -> None:
+        self._current_input_event = input_event
 
     @abstractmethod
     def process(self) -> None:
@@ -45,7 +42,7 @@ class ImageConsumer(ABC):
         while True:
             if self.__stop_event.is_set():
                 break
-            if self._current_image is not None:
+            if self._current_input_event is not None:
                 self.process()
             else:
                 sleep(0.001)

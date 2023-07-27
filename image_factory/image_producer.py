@@ -1,9 +1,9 @@
-from .dxshot import DXCamera, create, device_info, output_info
-from .image_consumer import ImageConsumer
-
 from threading import Event, Thread
 from time import sleep
 from typing import Dict, LiteralString
+
+from .dxshot import DXCamera, create, device_info, output_info
+from .image_consumer import ImageConsumer
 
 
 class ImageProducer:
@@ -29,7 +29,7 @@ class ImageProducer:
 
     def start(self) -> None:
         if self.__thread_handle.is_alive():
-            print("Screen Recorder is already running")
+            print(f"{self.__class__.__name__} is already running")
             return
         for consumer in self.__consumer_map.values():
             consumer.start()
@@ -37,7 +37,7 @@ class ImageProducer:
 
     def stop(self) -> None:
         if not self.__thread_handle.is_alive():
-            print("Screen Recorder is not running")
+            print(f"{self.__class__.__name__} is not running")
             return
 
         print("Stopping Producer...")
@@ -48,7 +48,6 @@ class ImageProducer:
             consumer.stop()
 
     def __capture_screen(self) -> None:
-        import cv2
         self.__camera.start()
         while True:
             if self.__stop_event.is_set():
