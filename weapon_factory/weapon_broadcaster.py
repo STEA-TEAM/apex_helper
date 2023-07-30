@@ -1,3 +1,4 @@
+from structures import ConsumerBase
 from .constants import AMMO_COLOR_DICT, LEFT_SOLT, ORIGIN_SCREEN_SIZE, RIGHT_SOLT, WEAPON_ICON_AREA, WEAPON_INFO_DICT
 from .types import AmmoInfo, AmmoType, Point, Rectangle
 from .utils import image_in_rectangle, image_relative_diff, get_point_color
@@ -5,16 +6,15 @@ from .weapon_subscriber import WeaponSubscriber
 
 from cv2 import INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT, boundingRect, resize
 from image_debugger import ImageDebugger
-from image_factory import ImageConsumer
-from numpy import ndarray as opencv_image
 from overrides import override
 from pyautogui import size as get_screen_size
+from structures import OpenCVImage
 from typing import Dict, LiteralString, Tuple
 
 import numpy as np
 
 
-class WeaponBroadcaster(ImageConsumer):
+class WeaponBroadcaster(ConsumerBase[OpenCVImage]):
     __debugger: ImageDebugger | None = None
     __scaled_shape: (int, int)
     __subscribers: Dict[LiteralString, WeaponSubscriber] = {}
@@ -66,7 +66,7 @@ class WeaponBroadcaster(ImageConsumer):
         for subscriber in self.__subscribers.values():
             subscriber.notify(ammo_info, weapon_identity)
 
-    def __get_ammo_infos(self, image: opencv_image) -> AmmoInfo | None:
+    def __get_ammo_infos(self, image: OpenCVImage) -> AmmoInfo | None:
         weapon_left: AmmoInfo
         weapon_right: AmmoInfo
 
@@ -100,7 +100,7 @@ class WeaponBroadcaster(ImageConsumer):
         else:
             return None
 
-    def __get_weapon_identity(self, image: opencv_image, ammo_info: AmmoInfo | None) -> LiteralString | None:
+    def __get_weapon_identity(self, image: OpenCVImage, ammo_info: AmmoInfo | None) -> LiteralString | None:
         if ammo_info is None:
             return None
         weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
@@ -127,7 +127,7 @@ class WeaponBroadcaster(ImageConsumer):
 
     def __get_weapon_eigenvalues(
             self,
-            image: opencv_image,
+            image: OpenCVImage,
             threshold: float = 0.95
     ) -> Tuple[float, float, float, float]:
         weapon_image = image_in_rectangle(image, WEAPON_ICON_AREA)
