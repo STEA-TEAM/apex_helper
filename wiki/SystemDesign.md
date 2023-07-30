@@ -42,21 +42,22 @@ classDiagram
         -Dict[str, InputConsumer] __consumers
     }
     InputProvider <.. InputProvider: Thread Loop
-    class InputConsumer {
+    class MonoTasker {
         <<Abstract>>
-        #InputInfo _current_input
-        +feed(input_info: InputInfo)
-        +@abstract process()
+        +trigger(input_info: InputInfo)
+        +@abstract abort()
+        #@abstract _start()
     }
-    InputConsumer <.. InputConsumer: Thread Loop
-    InputProvider *-- InputConsumer
+    MonoTasker <.. MonoTasker: Thread Loop
+    InputProvider *-- MonoTasker
 
     class RecoilSuppressor {
         -Dict[str, BaseAdapter] __adapters
-        +@override process()
+        +@override abort()
+        #@override _start()
     }
     WeaponSubscriber <|-- RecoilSuppressor
-    InputConsumer <|-- RecoilSuppressor
+    MonoTasker <|-- RecoilSuppressor
     class BaseAdapter {
         <<Abstract>>
         -List[Tuple[DeviceType, DeviceEvent, float]] __events

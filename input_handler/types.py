@@ -1,8 +1,6 @@
 from enum import Enum
-from typing import TypeAlias, TypedDict
-
-from pynput import mouse
-from pynput.keyboard import Key, KeyCode
+from pynput import keyboard, mouse
+from typing import TypeAlias, TypedDict, Tuple
 
 
 class InputType(Enum):
@@ -33,11 +31,12 @@ class MouseScrollEvent(TypedDict):
 
 
 class KeyPressEvent(TypedDict):
-    key: Key | KeyCode
+    key: keyboard.Key | keyboard.KeyCode
 
 
 class KeyReleaseEvent(TypedDict):
-    key: Key | KeyCode
+    key: keyboard.Key | keyboard.KeyCode
 
 
 InputEvent: TypeAlias = MouseMoveEvent | MouseClickEvent | MouseScrollEvent | KeyPressEvent | KeyReleaseEvent
+InputPayload: TypeAlias = Tuple[InputType, InputEvent]
