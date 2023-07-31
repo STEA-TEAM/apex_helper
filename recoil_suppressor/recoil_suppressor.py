@@ -1,14 +1,15 @@
+from typing import Dict, LiteralString
+
 from device_adapters import BaseAdapter
 from input_handler import InputPayload
 from structures import MonoTasker
-from typing import Dict, LiteralString
 from weapon_factory import WeaponSubscriber
 
 
 class RecoilSuppressor(MonoTasker[InputPayload], WeaponSubscriber):
     def _start(self, payload: InputPayload) -> None:
         (input_type, input_event) = payload
-        print(f"{self.name()} received {input_type} {input_event}")
+        # print(f"{self.name()} received {input_type} {input_event}")
 
     def abort(self) -> None:
         pass

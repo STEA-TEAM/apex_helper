@@ -1,17 +1,17 @@
+from typing import Dict, LiteralString, Tuple
+
+import numpy as np
+from cv2 import INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT, boundingRect, resize
+from overrides import override
+from pyautogui import size as get_screen_size
+
+from image_debugger import ImageDebugger
 from structures import ConsumerBase
+from structures import OpenCVImage
 from .constants import AMMO_COLOR_DICT, LEFT_SOLT, ORIGIN_SCREEN_SIZE, RIGHT_SOLT, WEAPON_ICON_AREA, WEAPON_INFO_DICT
 from .types import AmmoInfo, AmmoType, Point, Rectangle
 from .utils import image_in_rectangle, image_relative_diff, get_point_color
 from .weapon_subscriber import WeaponSubscriber
-
-from cv2 import INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT, boundingRect, resize
-from image_debugger import ImageDebugger
-from overrides import override
-from pyautogui import size as get_screen_size
-from structures import OpenCVImage
-from typing import Dict, LiteralString, Tuple
-
-import numpy as np
 
 
 class WeaponBroadcaster(ConsumerBase[OpenCVImage]):
@@ -42,18 +42,18 @@ class WeaponBroadcaster(ConsumerBase[OpenCVImage]):
         del self.__subscribers[name]
 
     @override
-    def process(self) -> None:
+    def _process(self, item: OpenCVImage) -> None:
         cropped_image = image_in_rectangle(resize(
-            self._current_image,
+            item,
             self.__scaled_shape,
             interpolation=INTER_NEAREST_EXACT
         ), self.__weapon_area)
 
         if self.__debugger is not None:
             self.__debugger.set_image(image_in_rectangle(resize(
-                self._current_image,
+                item,
                 self.__scaled_shape,
-                interpolation=INTER_AREA if self.__scaled_shape[0] < self._current_image.shape[1] else INTER_CUBIC
+                interpolation=INTER_AREA if self.__scaled_shape[0] < item.shape[1] else INTER_CUBIC
             ), self.__weapon_area))
 
         ammo_info = self.__get_ammo_infos(cropped_image)

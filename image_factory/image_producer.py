@@ -1,14 +1,18 @@
-from numpy import ndarray as opencv_image
-from overrides import override
-from structures import ProducerBase
 from time import sleep
 
+from overrides import final, override
+
+from structures import OpenCVImage, ProducerBase
 from .dxshot import DXCamera, create, device_info, output_info
 
 
-class ImageProducer(ProducerBase[opencv_image]):
+class ImageProducer(ProducerBase[OpenCVImage]):
     __camera: DXCamera
 
+    def __init__(self):
+        super().__init__(self.__class__.__name__)
+
+    @final
     @override
     def _run_before_loop(self) -> None:
         print("Initializing DxCam...")
@@ -19,12 +23,12 @@ class ImageProducer(ProducerBase[opencv_image]):
         print("DxCam initialized")
         self.__camera.start()
 
+    @final
     @override
-    def _thread_loop(self) -> None:
-        image = self.__camera.get_latest_frame()
-        for consumer in self.__consumer_map.values():
-            consumer.feed(image)
+    def _produce(self) -> OpenCVImage:
+        return self.__camera.get_latest_frame()
 
+    @final
     @override
     def _run_after_loop(self) -> None:
         self.__camera.stop()
