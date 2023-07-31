@@ -14,7 +14,7 @@ from .utils import image_in_rectangle, image_relative_diff, get_point_color
 from .weapon_subscriber import WeaponSubscriber
 
 
-class WeaponBroadcaster(ConsumerBase[OpenCVImage]):
+class WeaponPublisher(ConsumerBase[OpenCVImage]):
     __debugger: ImageDebugger | None = None
     __scaled_shape: (int, int)
     __subscribers: Dict[LiteralString, WeaponSubscriber] = {}

@@ -1,8 +1,6 @@
-from time import sleep
-
 from overrides import final, override
-
 from structures import OpenCVImage, ProducerBase
+from time import sleep
 from .dxshot import DXCamera, create, device_info, output_info
 
 

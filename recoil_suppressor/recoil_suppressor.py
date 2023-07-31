@@ -3,7 +3,7 @@ from typing import Dict, LiteralString
 from device_adapters import BaseAdapter
 from input_handler import InputPayload
 from structures import MonoTasker
-from weapon_factory import WeaponSubscriber
+from weapon_pubsub import WeaponSubscriber
 
 
 class RecoilSuppressor(MonoTasker[InputPayload], WeaponSubscriber):

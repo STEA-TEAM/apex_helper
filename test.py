@@ -1,7 +1,7 @@
 import cv2
 
 from image_debugger import ImageDebugger
-from weapon_factory import WeaponDetector
+from weapon_pubsub import WeaponDetector
 
 if __name__ == '__main__':
     image_debugger_2k = ImageDebugger("2K")
