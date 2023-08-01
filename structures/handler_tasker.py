@@ -17,14 +17,14 @@ class TaskerBase(ABC, EnforceOverrides, Generic[T]):
 
     def trigger(self, payload: T) -> None:
         self.abort()
-        self._start(payload)
+        self._run(payload)
 
     @abstractmethod
     def abort(self) -> None:
         pass
 
     @abstractmethod
-    def _start(self, payload: T) -> None:
+    def _run(self, payload: T) -> None:
         pass
 
 

@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from queue import Full, Queue
+from queue import Empty, Full, Queue
 from typing import Dict, Generic, LiteralString, TypeVar
 
 from overrides import override, final
@@ -32,8 +32,10 @@ class ConsumerBase(Generic[T], ReusableThread):
     @final
     @override
     def _thread_loop(self) -> None:
-        if not self.__queue.empty():
-            self._process(self.__queue.get())
+        try:
+            self._process(self.__queue.get_nowait())
+        except Empty:
+            pass
 
 
 class ProducerBase(Generic[T], ReusableThread):

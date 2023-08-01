@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
-from overrides import EnforceOverrides
 from threading import Event, Thread
 from typing import LiteralString, final
+
+from overrides import EnforceOverrides
 
 
 class ReusableThread(ABC, EnforceOverrides):
@@ -43,5 +44,5 @@ class ReusableThread(ABC, EnforceOverrides):
         while not self.__terminate_event.is_set():
             self.__run_event.wait()
             self._thread_loop()
-        self.__terminate_event.clear()
         self._run_after_loop()
+        self.__terminate_event.clear()

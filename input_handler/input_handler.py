@@ -35,6 +35,10 @@ class InputHandler(HandlerBase[InputPayload]):
         print("Stopping Consumers...")
         self._abort_tasks()
 
+    def terminate(self) -> None:
+        self.__keyboard_listener.stop()
+        self.__mouse_listener.stop()
+
     def __on_move(self, x, y):
         if not self.__is_running:
             return

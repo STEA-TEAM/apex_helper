@@ -22,7 +22,7 @@ class RecoilSuppressor(TaskerBase[InputPayload], SubscriberBase[WeaponIdentity])
         del self.__adapters[adapter.name()]
 
     @override
-    def _start(self, payload: InputPayload) -> None:
+    def _run(self, payload: InputPayload) -> None:
         (input_type, input_event) = payload
         if input_type == InputType.MouseClick:
             click_event = cast(MouseClickEvent, input_event)
