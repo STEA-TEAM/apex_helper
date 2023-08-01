@@ -1,6 +1,7 @@
+from structures import Point, Rectangle
 from typing import Dict, List
 
-from .types import AmmoType, AmmoInfo, WeaponInfo, Point, Rectangle, WeaponIdentity
+from .types import AmmoType, AmmoInfo, WeaponInfo, WeaponIdentity
 
 ORIGIN_SCREEN_SIZE = 3840
 WEAPON_AREA_BOUNDARIES: Rectangle = ((832, 252), (101, 45))

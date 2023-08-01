@@ -1,4 +1,4 @@
-from .common_types import OpenCVImage
+from .common_types import Color, OpenCVImage, Point, Rectangle
 from .handler_tasker import HandlerBase, TaskerBase
 from .producer_consumer import ConsumerBase, ProducerBase
 from .publisher_subscriber import PublisherBase, SubscriberBase

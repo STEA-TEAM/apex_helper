@@ -1,8 +1,5 @@
 from enum import Enum
-from typing import Tuple, TypeAlias, TypedDict
-
-Point: TypeAlias = Tuple[int, int]
-Rectangle: TypeAlias = Tuple[Point, Point]
+from typing import Tuple, TypedDict
 
 
 class AmmoType(Enum):

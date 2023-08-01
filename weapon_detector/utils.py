@@ -1,7 +1,7 @@
 from numpy import ndarray as opencv_image, abs, int16, max, min, sum, uint8, where
+from structures import Point, Rectangle
 
 from .constants import ORIGIN_SCREEN_SIZE, WEAPON_AREA_BOUNDARIES
-from .types import Point, Rectangle
 
 
 def get_point_color(image: opencv_image, point: Point) -> int:
@@ -21,7 +21,7 @@ def get_weapon_area(image_shape: Point) -> Rectangle:
 
 
 def image_in_rectangle(image: opencv_image, rectangle: Rectangle) -> opencv_image:
-    return image[rectangle[0][1] : rectangle[1][1], rectangle[0][0] : rectangle[1][0]]
+    return image[rectangle[0][1]: rectangle[1][1], rectangle[0][0]: rectangle[1][0]]
 
 
 def image_relative_diff(image: opencv_image, ref_color, threshold) -> opencv_image:

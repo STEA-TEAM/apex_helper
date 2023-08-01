@@ -7,7 +7,7 @@ from pyautogui import size as get_screen_size
 
 from image_debugger import ImageDebugger
 from structures import ConsumerBase, PublisherBase
-from structures import OpenCVImage
+from structures import OpenCVImage, Point, Rectangle
 from .constants import (
     AMMO_COLOR_DICT,
     LEFT_SOLT,
@@ -15,7 +15,7 @@ from .constants import (
     WEAPON_ICON_AREA,
     WEAPON_INFO_DICT,
 )
-from .types import AmmoInfo, AmmoType, Point, Rectangle, WeaponIdentity
+from .types import AmmoInfo, AmmoType, WeaponIdentity
 from .utils import (
     image_in_rectangle,
     image_relative_diff,
@@ -98,7 +98,7 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
             return None
 
     def __get_weapon_identity(
-        self, image: OpenCVImage, ammo_info: AmmoInfo | None
+            self, image: OpenCVImage, ammo_info: AmmoInfo | None
     ) -> WeaponIdentity:
         if ammo_info is None:
             return WeaponIdentity.Unknown
@@ -124,7 +124,7 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
         return current_weapon["name"]
 
     def __get_weapon_eigenvalues(
-        self, image: OpenCVImage, threshold: float = 0.95
+            self, image: OpenCVImage, threshold: float = 0.95
     ) -> Tuple[float, float, float, float]:
         weapon_image = image_in_rectangle(image, WEAPON_ICON_AREA)
         weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)
