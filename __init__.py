@@ -23,7 +23,7 @@ if __name__ == "__main__":
     image_producer.register(weapon_broadcaster)
     weapon_broadcaster.set_debugger(ImageDebugger("Weapon Detector"))
     weapon_broadcaster.register(recoil_suppressor)
-    # input_handler.register(recoil_suppressor)
+    input_handler.register(recoil_suppressor)
 
     Listener(on_press=on_press).start()
 
