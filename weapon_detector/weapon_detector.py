@@ -26,16 +26,15 @@ from .utils import (
 
 
 class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
-    __debugger: ImageDebugger | None = None
-    __is_aborted: bool = False
-    __scaled_shape: Point
-    __weapon_area: Rectangle
-
     def __init__(self, screen_size: Point = get_screen_size()):
-        super().__init__(self.__class__.__name__)
-        print(f"Initializing with screen size: {screen_size}")
-        self.__scaled_shape = scale_screen(screen_size)
-        self.__weapon_area = get_weapon_area(self.__scaled_shape)
+        self.__debugger: ImageDebugger | None = None
+        self.__is_aborted: bool = False
+        self.__scaled_shape: Point = scale_screen(screen_size)
+        self.__weapon_area: Rectangle = get_weapon_area(self.__scaled_shape)
+
+        TaskerBase.__init__(self)
+        PublisherBase.__init__(self)
+        print(f"Initialized with screen size: {screen_size}")
 
     @final
     def set_debugger(self, debugger: ImageDebugger) -> None:

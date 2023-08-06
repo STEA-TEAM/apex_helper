@@ -1,7 +1,6 @@
 from abc import abstractmethod
-from typing import Dict, Generic, LiteralString, TypeVar, List
-
 from overrides import override, final
+from typing import Generic, TypeVar, List
 
 from .reusable_thread import ReusableThread
 
@@ -9,12 +8,9 @@ T = TypeVar("T")
 
 
 class ConsumerBase(Generic[T], ReusableThread):
-    __name: LiteralString
-    __queue: List[T] = []
-
-    def __init__(self, name: LiteralString):
-        self.__name = name
-        super().__init__(name)
+    def __init__(self):
+        self.__queue: List[T] = []
+        super().__init__()
 
     @final
     def append(self, item: T) -> None:

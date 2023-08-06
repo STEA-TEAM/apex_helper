@@ -4,18 +4,16 @@ from overrides import override
 from pynput import mouse
 from structures import TaskerBase, SubscriberBase
 from typing import Dict, LiteralString, cast
-
-from structures.tasker import T
 from weapon_detector import WeaponIdentity
 
 from .constants import RECOIL_SUPPRESSION_DICT
 
 
 class RecoilSuppressor(TaskerBase[InputPayload], SubscriberBase[WeaponIdentity]):
-    __adapters: Dict[LiteralString, BaseAdapter] = {}
-
     def __init__(self):
-        super().__init__(self.__class__.__name__)
+        self.__adapters: Dict[LiteralString, BaseAdapter] = {}
+        TaskerBase.__init__(self)
+        SubscriberBase.__init__(self)
 
     def register(self, adapter: BaseAdapter) -> None:
         self.__adapters[adapter.name()] = adapter

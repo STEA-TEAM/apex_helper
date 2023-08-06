@@ -6,16 +6,8 @@ T = TypeVar("T")
 
 
 class SubscriberBase(EnforceOverrides, Generic[T]):
-    _item: T | None = None
-    __name: LiteralString
-
-    def __init__(self, name: LiteralString):
-        self.__name = name
-        return
-
-    @final
-    def name(self) -> LiteralString:
-        return self.__name
+    def __init__(self):
+        self._item: T | None = None
 
     @final
     def notify(self, item: T) -> None:
@@ -23,18 +15,16 @@ class SubscriberBase(EnforceOverrides, Generic[T]):
 
 
 class PublisherBase(EnforceOverrides):
-    __subscribers: Dict[LiteralString, SubscriberBase] = {}
-
     def __init__(self):
-        return
+        self.__subscribers: Dict[LiteralString, SubscriberBase] = {}
 
     @final
     def add_subscriber(self, subscriber: SubscriberBase[T]) -> None:
-        self.__subscribers[subscriber.name()] = subscriber
+        self.__subscribers[subscriber.__class__.__name__] = subscriber
 
     @final
     def remove_subscriber(self, subscriber: SubscriberBase[T]) -> None:
-        del self.__subscribers[subscriber.name()]
+        del self.__subscribers[subscriber.__class__.__name__]
 
     @final
     def _publish(self, item: T) -> None:

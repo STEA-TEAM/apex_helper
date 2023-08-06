@@ -8,14 +8,12 @@ from .types import DeviceEvent, DeviceType, DeviceInstruction
 
 
 class BaseAdapter(ABC):
-    __instructions: List[DeviceInstruction] = []
-    __is_running: bool = False
-    __name: LiteralString
-    __thread_handle: Thread
-
     def __init__(self, name: LiteralString):
-        self.__name = name
-        self.__thread_handle = Thread(target=self.__consume)
+        self.__instructions: List[DeviceInstruction] = []
+        self.__is_running: bool = False
+        self.__name: LiteralString = name
+        self.__thread_handle: Thread = Thread(target=self.__consume)
+
         self.__thread_handle.start()
 
     @final

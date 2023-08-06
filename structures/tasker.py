@@ -8,14 +8,8 @@ T = TypeVar("T")
 
 
 class TaskerBase(ABC, EnforceOverrides, Generic[TaskerPayloadType]):
-    __name: LiteralString
-    __is_running: bool = False
-
-    def __init__(self, name: LiteralString):
-        self.__name = name
-
-    def name(self) -> LiteralString:
-        return self.__name
+    def __init__(self):
+        self.__is_running: bool = False
 
     @final
     def abort(self) -> None:
@@ -47,19 +41,23 @@ class TaskerBase(ABC, EnforceOverrides, Generic[TaskerPayloadType]):
 
 
 class TaskerManagerBase(EnforceOverrides, Generic[T]):
-    _tasker_map: Dict[LiteralString, TaskerBase] = {}
+
+    def __init__(self):
+        self._tasker_map: Dict[LiteralString, TaskerBase[T]] = {}
 
     @final
-    def add_tasker(self, tasker: TaskerBase) -> None:
-        if tasker.name() in self._tasker_map:
-            self.remove_tasker(tasker.name())
-        self._tasker_map[tasker.name()] = tasker
+    def add_tasker(self, tasker: TaskerBase[T]) -> None:
+        print(tasker.__class__.__name__)
+        if tasker.__class__.__name__ in self._tasker_map:
+            self.remove_tasker(tasker)
+        self._tasker_map[tasker.__class__.__name__] = tasker
 
     @final
-    def remove_tasker(self, name: LiteralString) -> None:
-        if name in self._tasker_map:
-            self._tasker_map[name].abort()
-            del self._tasker_map[name]
+    def remove_tasker(self, tasker: TaskerBase[T]) -> None:
+        print(tasker.__class__.__name__)
+        if tasker.__class__.__name__ in self._tasker_map:
+            self._tasker_map[tasker.__class__.__name__].abort()
+            del self._tasker_map[tasker.__class__.__name__]
 
     @final
     def _abort_tasks(self) -> None:

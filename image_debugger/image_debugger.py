@@ -7,14 +7,11 @@ import numpy as np
 
 
 class ImageDebugger:
-    __image: OpenCVImage | None = None
-    __window_name: LiteralString
-    __custom_scale: float
-    __timestamps: List[float] = [datetime.now().timestamp()]
-
     def __init__(self, window_name: LiteralString = "Image Debugger", custom_scale: float = 1.0):
-        self.__window_name = window_name
-        self.__custom_scale = custom_scale
+        self.__custom_scale: float = custom_scale
+        self.__image: OpenCVImage | None = None
+        self.__timestamps: List[float] = [datetime.now().timestamp()]
+        self.__window_name: LiteralString = window_name
 
     def set_image(self, image: OpenCVImage):
         self.__image = image.copy()

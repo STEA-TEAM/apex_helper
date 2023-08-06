@@ -6,17 +6,11 @@ from overrides import EnforceOverrides
 
 
 class ReusableThread(ABC, EnforceOverrides):
-    __name: LiteralString
-    __run_event: Event = Event()
-    __terminate_event: Event = Event()
+    def __init__(self):
+        self.__run_event: Event = Event()
+        self.__terminate_event: Event = Event()
 
-    def __init__(self, name: LiteralString):
-        self.__name = name
         Thread(target=self.__thread_target).start()
-
-    @final
-    def name(self) -> LiteralString:
-        return self.__name
 
     def start(self) -> None:
         self.__run_event.set()

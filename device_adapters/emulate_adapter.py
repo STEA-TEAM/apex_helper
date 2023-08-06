@@ -9,10 +9,10 @@ from .types import DeviceEvent, DeviceType, KeyboardEvent, MouseEvent
 
 
 class EmulateAdapter(BaseAdapter):
-    __keyboard: keyboard.Controller = keyboard.Controller()
-
     def __init__(self):
-        super().__init__(self.__class__.__name__)
+        self.__keyboard: keyboard.Controller = keyboard.Controller()
+
+        BaseAdapter.__init__(self, self.__class__.__name__)
 
     @final
     def process(self, device_type: DeviceType, device_event: DeviceEvent) -> None:

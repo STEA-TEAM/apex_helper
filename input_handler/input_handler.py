@@ -6,17 +6,16 @@ from .types import InputPayload, InputType
 
 
 class InputHandler(TaskerManagerBase[InputPayload]):
-    __is_running: bool = False
-    __mouse_listener: mouse.Listener
-    __keyboard_listener: keyboard.Listener
-
     def __init__(self):
-        self.__mouse_listener = mouse.Listener(
+        self.__is_running: bool = False
+        self.__mouse_listener: mouse.Listener = mouse.Listener(
             on_click=self.__on_click, on_scroll=self.__on_scroll
         )
-        self.__keyboard_listener = keyboard.Listener(
+        self.__keyboard_listener: keyboard.Listener = keyboard.Listener(
             on_press=self.__on_press, on_release=self.__on_release
         )
+
+        super().__init__()
         self.__mouse_listener.start()
         self.__keyboard_listener.start()
 
@@ -47,7 +46,6 @@ class InputHandler(TaskerManagerBase[InputPayload]):
     def __on_click(self, x, y, button, pressed):
         if not self.__is_running:
             return
-        print(self._tasker_map)
         self._restart_tasks(
             (
                 InputType.MouseClick,

@@ -7,14 +7,11 @@ from input_handler import InputHandler
 from recoil_suppressor import RecoilSuppressor
 from weapon_detector import WeaponDetector
 
-terminate_event: Event = Event()
-
 
 def on_press(key):
     if key == Key.delete:
         image_producer.terminate()
         input_handler.terminate()
-        terminate_event.set()
         return
 
 
@@ -35,6 +32,3 @@ if __name__ == "__main__":
 
     image_producer.start()
     input_handler.start()
-
-    while not terminate_event.is_set():
-        pass
