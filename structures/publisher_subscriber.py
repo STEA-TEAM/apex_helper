@@ -29,11 +29,11 @@ class PublisherBase(EnforceOverrides):
         return
 
     @final
-    def register(self, subscriber: SubscriberBase[T]) -> None:
+    def add_subscriber(self, subscriber: SubscriberBase[T]) -> None:
         self.__subscribers[subscriber.name()] = subscriber
 
     @final
-    def unregister(self, subscriber: SubscriberBase[T]) -> None:
+    def remove_subscriber(self, subscriber: SubscriberBase[T]) -> None:
         del self.__subscribers[subscriber.name()]
 
     @final

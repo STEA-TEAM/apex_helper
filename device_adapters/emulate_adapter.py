@@ -1,5 +1,6 @@
 from ctypes import windll
 from functools import reduce
+from overrides import final
 from pynput import keyboard
 from typing import cast
 
@@ -13,6 +14,7 @@ class EmulateAdapter(BaseAdapter):
     def __init__(self):
         super().__init__(self.__class__.__name__)
 
+    @final
     def process(self, device_type: DeviceType, device_event: DeviceEvent) -> None:
         if device_type == DeviceType.Mouse:
             (event_flags, point, data) = cast(MouseEvent, device_event)

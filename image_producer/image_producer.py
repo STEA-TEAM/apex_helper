@@ -1,11 +1,17 @@
 from overrides import final, override
-from structures import OpenCVImage, ProducerBase
+from structures import OpenCVImage, TaskerManagerBase, ReusableThread
 from time import sleep
 from .dxshot import DXCamera, create, device_info, output_info
 
 
-class ImageProducer(ProducerBase[OpenCVImage]):
+class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
     __camera: DXCamera
+
+    @final
+    @override
+    def _thread_loop(self) -> None:
+        image = self.__camera.get_latest_frame()
+        self._start_tasks(image)
 
     def __init__(self):
         super().__init__(self.__class__.__name__)
@@ -20,11 +26,7 @@ class ImageProducer(ProducerBase[OpenCVImage]):
         sleep(1.0)
         print("DxCam initialized")
         self.__camera.start()
-
-    @final
-    @override
-    def _produce(self) -> OpenCVImage:
-        return self.__camera.get_latest_frame()
+        print(self._tasker_map)
 
     @final
     @override

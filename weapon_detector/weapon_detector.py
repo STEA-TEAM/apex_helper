@@ -2,11 +2,11 @@ from typing import Tuple
 
 import numpy as np
 from cv2 import INTER_AREA, INTER_CUBIC, INTER_NEAREST_EXACT, boundingRect, resize
-from overrides import override
+from overrides import override, final
 from pyautogui import size as get_screen_size
 
 from image_debugger import ImageDebugger
-from structures import ConsumerBase, PublisherBase
+from structures import TaskerBase, PublisherBase
 from structures import OpenCVImage, Point, Rectangle
 from .constants import (
     AMMO_COLOR_DICT,
@@ -25,8 +25,9 @@ from .utils import (
 )
 
 
-class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
+class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
     __debugger: ImageDebugger | None = None
+    __is_aborted: bool = False
     __scaled_shape: Point
     __weapon_area: Rectangle
 
@@ -36,24 +37,36 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
         self.__scaled_shape = scale_screen(screen_size)
         self.__weapon_area = get_weapon_area(self.__scaled_shape)
 
+    @final
     def set_debugger(self, debugger: ImageDebugger) -> None:
         self.__debugger = debugger
 
+    @final
     @override
-    def _process(self, item: OpenCVImage) -> None:
+    def _abort_task(self) -> None:
+        self.__is_aborted = True
+
+    @final
+    @override
+    def _start_task(self, payload: OpenCVImage) -> None:
+        self.__is_aborted = False
+
         cropped_image = image_in_rectangle(
-            resize(item, self.__scaled_shape, interpolation=INTER_NEAREST_EXACT),
+            resize(payload, self.__scaled_shape, interpolation=INTER_NEAREST_EXACT),
             self.__weapon_area,
         )
+
+        if self.__is_aborted:
+            return
 
         if self.__debugger is not None:
             self.__debugger.set_image(
                 image_in_rectangle(
                     resize(
-                        item,
+                        payload,
                         self.__scaled_shape,
                         interpolation=INTER_AREA
-                        if self.__scaled_shape[0] < item.shape[1]
+                        if self.__scaled_shape[0] < payload.shape[1]
                         else INTER_CUBIC,
                     ),
                     self.__weapon_area,
@@ -61,14 +74,22 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
             )
 
         ammo_info = self.__get_ammo_infos(cropped_image)
+        if self.__is_aborted:
+            return
+
         weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
+        if self.__is_aborted:
+            return
+
         if self.__debugger is not None:
             ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
             weapon_identity_text = f"    Weapon: {weapon_identity}"
             self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
             self.__debugger.show()
+
         self._publish(weapon_identity)
 
+    @final
     def __get_ammo_infos(self, image: OpenCVImage) -> AmmoInfo | None:
         weapon_left: AmmoInfo
         weapon_right: AmmoInfo
@@ -97,6 +118,7 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
         else:
             return None
 
+    @final
     def __get_weapon_identity(
             self, image: OpenCVImage, ammo_info: AmmoInfo | None
     ) -> WeaponIdentity:
@@ -123,6 +145,7 @@ class WeaponDetector(ConsumerBase[OpenCVImage], PublisherBase):
                 current_weapon["name"] = weapon_info["identity"]
         return current_weapon["name"]
 
+    @final
     def __get_weapon_eigenvalues(
             self, image: OpenCVImage, threshold: float = 0.95
     ) -> Tuple[float, float, float, float]:
