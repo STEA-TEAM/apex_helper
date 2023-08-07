@@ -1,5 +1,5 @@
 from datetime import datetime
-from structures import Color, OpenCVImage, Point, Rectangle
+from structures import RGB, OpenCVImage, Point, Rectangle
 from typing import List, LiteralString
 
 import cv2
@@ -16,11 +16,11 @@ class ImageDebugger:
     def set_image(self, image: OpenCVImage):
         self.__image = image.copy()
 
-    def add_circle(self, center: Point, radius: int, color: Color = (0, 0, 255), thickness: int = 1):
+    def add_circle(self, center: Point, radius: int, color: RGB = (0, 0, 255), thickness: int = 1):
         if self.__image is not None:
             cv2.circle(self.__image, center, radius, color, thickness)
 
-    def add_rectangle(self, rectangle: Rectangle, color: Color = (0, 0, 255), thickness: int = 1):
+    def add_rectangle(self, rectangle: Rectangle, color: RGB = (0, 0, 255), thickness: int = 1):
         if self.__image is not None:
             cv2.rectangle(self.__image, rectangle[0], rectangle[1], color, thickness)
 
@@ -28,7 +28,7 @@ class ImageDebugger:
             self,
             texts: List[LiteralString],
             size: float = 0.5,
-            color: Color = (0, 0, 0),
+            color: RGB = (0, 0, 0),
             thickness: int = 1
     ):
         if self.__image is not None:

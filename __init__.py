@@ -1,4 +1,3 @@
-from multiprocessing import Event
 from pynput.keyboard import Key, Listener
 
 from image_debugger import ImageDebugger

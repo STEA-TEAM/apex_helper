@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from threading import Event, Thread
-from typing import LiteralString, final
 
-from overrides import EnforceOverrides
+from overrides import EnforceOverrides, final
 
 
 class ReusableThread(ABC, EnforceOverrides):

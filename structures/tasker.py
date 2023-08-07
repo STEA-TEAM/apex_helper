@@ -47,14 +47,12 @@ class TaskerManagerBase(EnforceOverrides, Generic[T]):
 
     @final
     def add_tasker(self, tasker: TaskerBase[T]) -> None:
-        print(tasker.__class__.__name__)
         if tasker.__class__.__name__ in self._tasker_map:
             self.remove_tasker(tasker)
         self._tasker_map[tasker.__class__.__name__] = tasker
 
     @final
     def remove_tasker(self, tasker: TaskerBase[T]) -> None:
-        print(tasker.__class__.__name__)
         if tasker.__class__.__name__ in self._tasker_map:
             self._tasker_map[tasker.__class__.__name__].abort()
             del self._tasker_map[tasker.__class__.__name__]
