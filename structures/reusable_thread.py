@@ -9,7 +9,7 @@ class ReusableThread(ABC, EnforceOverrides):
         self.__run_event: Event = Event()
         self.__terminate_event: Event = Event()
 
-        Thread(target=self.__thread_target).start()
+        Thread(target=self.__thread_target, name=self.__class__.__name__).start()
 
     def start(self) -> None:
         self.__run_event.set()

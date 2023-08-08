@@ -1,3 +1,5 @@
+import threading
+
 from device_adapters import EmulateAdapter
 from image_debugger import ImageDebugger
 from image_producer import ImageProducer
@@ -12,7 +14,8 @@ def on_press(key):
         emulate_adapter.terminate()
         image_producer.terminate()
         input_handler.terminate()
-        return
+        for thread in threading.enumerate():
+            print(thread.__class__.__name__, thread.name)
 
 
 if __name__ == "__main__":

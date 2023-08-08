@@ -9,10 +9,12 @@ class InputHandler(TaskerManagerBase[InputPayload]):
     def __init__(self):
         self.__is_running: bool = False
         self.__mouse_listener: mouse.Listener = mouse.Listener(
-            on_click=self.__on_click, on_scroll=self.__on_scroll
+            on_click=self.__on_click,
+            on_scroll=self.__on_scroll,
         )
         self.__keyboard_listener: keyboard.Listener = keyboard.Listener(
-            on_press=self.__on_press, on_release=self.__on_release
+            on_press=self.__on_press,
+            on_release=self.__on_release,
         )
 
         super().__init__()

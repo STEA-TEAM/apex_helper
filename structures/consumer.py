@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from queue import Queue
-
 from overrides import override, final, EnforceOverrides
+from queue import Queue, Empty
+from threading import Lock
 from typing import Generic, TypeVar, List, Dict, LiteralString
 
 from .reusable_thread import ReusableThread
@@ -12,6 +12,7 @@ T = TypeVar("T")
 class ConsumerBase(Generic[T], ReusableThread):
     def __init__(self):
         self.__queue: Queue[T] = Queue[T]()
+        self.__queue_lock: Lock = Lock()
         super().__init__()
 
     @final
@@ -25,14 +26,16 @@ class ConsumerBase(Generic[T], ReusableThread):
 
     @final
     def replace_items(self, item_list: List[T], force: bool) -> None:
-        if not force and not self.__queue.empty():
+        self.__queue_lock.acquire()
+        try:
             first_item = self.__queue.get_nowait()
-            self.__queue = Queue[T]()
-            self.__queue.put_nowait(first_item)
-            self.push_items(item_list)
-        else:
-            self.__queue = Queue[T]()
-            self.push_items(item_list)
+        except Empty:
+            first_item = None
+        self.__clear_queue()
+        if not force and Empty is not None:
+            self.append(first_item)
+        self.push_items(item_list)
+        self.__queue_lock.release()
 
     @abstractmethod
     def _process(self, item: T) -> None:
@@ -42,10 +45,25 @@ class ConsumerBase(Generic[T], ReusableThread):
     @override
     def _thread_loop(self) -> None:
         try:
-            self._process(self.__queue.get())
+            item = self.__queue.get(timeout=0.1)
+            if item is not None:
+                self._process(item)
             self.__queue.task_done()
-        except IndexError:
+        except (Empty, ValueError):
             pass
+
+    @final
+    @override
+    def _run_after_loop(self) -> None:
+        print(f"Consumer {self.__class__.__name__} terminated")
+
+    def __clear_queue(self) -> None:
+        while not self.__queue.empty():
+            try:
+                self.__queue.get_nowait()
+            except Empty:
+                continue
+            self.__queue.task_done()
 
 
 class ConsumerManagerBase(EnforceOverrides, Generic[T]):
