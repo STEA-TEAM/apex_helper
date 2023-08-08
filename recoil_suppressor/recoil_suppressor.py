@@ -1,31 +1,30 @@
-from device_adapters import BaseAdapter
+from device_adapters import DeviceInstruction
 from input_handler import InputPayload, InputType, MouseClickEvent
-from overrides import override
+from overrides import override, final
 from pynput import mouse
-from structures import TaskerBase, SubscriberBase
-from typing import Dict, LiteralString, cast
+from structures import TaskerBase, SubscriberBase, ConsumerManagerBase
+from typing import cast
 from weapon_detector import WeaponIdentity
 
 from .constants import RECOIL_SUPPRESSION_DICT
 
 
-class RecoilSuppressor(TaskerBase[InputPayload], SubscriberBase[WeaponIdentity]):
+class RecoilSuppressor(
+    TaskerBase[InputPayload],
+    ConsumerManagerBase[DeviceInstruction],
+    SubscriberBase[WeaponIdentity],
+):
     def __init__(self):
-        self.__adapters: Dict[LiteralString, BaseAdapter] = {}
         TaskerBase.__init__(self)
+        ConsumerManagerBase.__init__(self)
         SubscriberBase.__init__(self)
 
-    def register(self, adapter: BaseAdapter) -> None:
-        self.__adapters[adapter.name()] = adapter
-
-    def unregister(self, adapter: BaseAdapter) -> None:
-        del self.__adapters[adapter.name()]
-
+    @final
     @override
     def _abort_task(self) -> None:
-        for adapter_name, adapter in self.__adapters.items():
-            adapter.replace_events([], True)
+        self.__stop_recoil_suppression()
 
+    @final
     @override
     def _start_task(self, payload: InputPayload) -> None:
         (input_type, input_event) = payload
@@ -37,14 +36,12 @@ class RecoilSuppressor(TaskerBase[InputPayload], SubscriberBase[WeaponIdentity])
                 else:
                     self.__stop_recoil_suppression()
 
+    @final
     def __start_recoil_suppression(self) -> None:
         if self._item in RECOIL_SUPPRESSION_DICT:
-            print(f"Try start suppressing recoil, Current weapon: {self._item}")
             suppress_events = RECOIL_SUPPRESSION_DICT[self._item]
-            print(f"Suppress events: {suppress_events}")
-            for adapter_name, adapter in self.__adapters.items():
-                print(f"Pushing events to {adapter_name}")
-                adapter.push_events(suppress_events)
+            self._replace_items_all(suppress_events, False)
 
+    @final
     def __stop_recoil_suppression(self) -> None:
-        print(f"Try stop suppressing recoil, Current weapon: {self._item}")
+        self._replace_items_all([], True)

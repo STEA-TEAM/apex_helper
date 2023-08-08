@@ -9,6 +9,7 @@ from weapon_detector import WeaponDetector
 
 def on_press(key):
     if key == Key.delete:
+        emulate_adapter.terminate()
         image_producer.terminate()
         input_handler.terminate()
         return
@@ -25,11 +26,11 @@ if __name__ == "__main__":
     weapon_broadcaster.set_debugger(ImageDebugger("Weapon Detector"))
     weapon_broadcaster.add_subscriber(recoil_suppressor)
     input_handler.add_tasker(recoil_suppressor)
-    recoil_suppressor.register(emulate_adapter)
-
+    recoil_suppressor.add_consumer(emulate_adapter)
     Listener(on_press=on_press).start()
 
     print("Press delete to stop")
 
+    emulate_adapter.start()
     image_producer.start()
     input_handler.start()
