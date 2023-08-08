@@ -20,13 +20,14 @@ if __name__ == "__main__":
     image_producer = ImageProducer()
     input_handler = InputHandler()
     recoil_suppressor = RecoilSuppressor()
-    weapon_broadcaster = WeaponDetector()
+    weapon_detector = WeaponDetector()
 
-    image_producer.add_tasker(weapon_broadcaster)
-    weapon_broadcaster.set_debugger(ImageDebugger("Weapon Detector"))
-    weapon_broadcaster.add_subscriber(recoil_suppressor)
+    image_producer.add_tasker(weapon_detector)
+    weapon_detector.set_debugger(ImageDebugger("Weapon Detector"))
+    weapon_detector.add_subscriber(recoil_suppressor)
     input_handler.add_tasker(recoil_suppressor)
     recoil_suppressor.add_consumer(emulate_adapter)
+
     Listener(on_press=on_press).start()
 
     print("Press delete to stop")

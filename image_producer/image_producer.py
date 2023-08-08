@@ -12,13 +12,14 @@ class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
         self._start_tasks(image)
 
     def __init__(self):
+        print("Initializing DxCam...")
+        print(device_info())
+        print(output_info())
+
         self.__camera: DXCamera = create(output_color="BGR")
 
         TaskerManagerBase.__init__(self)
         ReusableThread.__init__(self)
-        print("Initialized DxCam...")
-        print(device_info())
-        print(output_info())
 
     @final
     @override
