@@ -26,11 +26,11 @@ AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
         "type": AmmoType.Light,
         "active": False
     },
-    0x5a6e28: {
+    0x596e28: {
         "type": AmmoType.Energy,
         "active": True
     },
-    0x2e371d: {
+    0x2e361d: {
         "type": AmmoType.Energy,
         "active": False
     },
@@ -42,7 +42,7 @@ AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
         "type": AmmoType.Shotgun,
         "active": False
     },
-    0x4b408f: {
+    0x4b3f8f: {
         "type": AmmoType.Sniper,
         "active": True
     },
@@ -50,7 +50,7 @@ AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
         "type": AmmoType.Sniper,
         "active": False
     },
-    0xb20137: {
+    0xb20136: {
         "type": AmmoType.Mythic,
         "active": True
     },

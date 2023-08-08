@@ -52,6 +52,7 @@ class BaseAdapter(ABC):
                 continue
             while len(self.__instructions) > 0:
                 (current_device_type, current_device_event, delay) = self.__instructions[0]
+                print(f"Processing {current_device_type} event: {current_device_event} with delay {delay}")
                 self.process(current_device_type, current_device_event)
                 sleep(delay)
                 self.__instructions.pop(0)

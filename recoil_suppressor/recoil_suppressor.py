@@ -41,7 +41,9 @@ class RecoilSuppressor(TaskerBase[InputPayload], SubscriberBase[WeaponIdentity])
         if self._item in RECOIL_SUPPRESSION_DICT:
             print(f"Try start suppressing recoil, Current weapon: {self._item}")
             suppress_events = RECOIL_SUPPRESSION_DICT[self._item]
+            print(f"Suppress events: {suppress_events}")
             for adapter_name, adapter in self.__adapters.items():
+                print(f"Pushing events to {adapter_name}")
                 adapter.push_events(suppress_events)
 
     def __stop_recoil_suppression(self) -> None:
