@@ -18,6 +18,10 @@ class ReusableThread(ABC, EnforceOverrides):
         self.__run_event.clear()
 
     @final
+    def name(self) -> str:
+        return self.__class__.__name__
+
+    @final
     def terminate(self) -> None:
         self.__terminate_event.set()
 
