@@ -6,26 +6,26 @@ from typing import Generic, TypeVar, List, Dict, LiteralString
 
 from .reusable_thread import ReusableThread
 
-T = TypeVar("T")
+ItemType = TypeVar("ItemType")
 
 
-class ConsumerBase(Generic[T], ReusableThread):
+class ConsumerBase(Generic[ItemType], ReusableThread):
     def __init__(self):
-        self.__queue: Queue[T] = Queue[T]()
+        self.__queue: Queue[ItemType] = Queue[ItemType]()
         self.__queue_lock: Lock = Lock()
-        super().__init__()
+        ReusableThread.__init__(self)
 
     @final
-    def append(self, item: T) -> None:
+    def append(self, item: ItemType) -> None:
         self.__queue.put_nowait(item)
 
     @final
-    def push_items(self, item_list: List[T]) -> None:
+    def push_items(self, item_list: List[ItemType]) -> None:
         for i in item_list:
             self.__queue.put_nowait(i)
 
     @final
-    def replace_items(self, item_list: List[T], force: bool) -> None:
+    def replace_items(self, item_list: List[ItemType], force: bool) -> None:
         self.__queue_lock.acquire()
         try:
             first_item = self.__queue.get_nowait()
@@ -38,7 +38,7 @@ class ConsumerBase(Generic[T], ReusableThread):
         self.__queue_lock.release()
 
     @abstractmethod
-    def _process(self, item: T) -> None:
+    def _process(self, item: ItemType) -> None:
         pass
 
     @final
@@ -52,11 +52,6 @@ class ConsumerBase(Generic[T], ReusableThread):
         except (Empty, ValueError):
             pass
 
-    @final
-    @override
-    def _run_after_loop(self) -> None:
-        print(f"Consumer {self.__class__.__name__} terminated")
-
     def __clear_queue(self) -> None:
         while not self.__queue.empty():
             try:
@@ -66,33 +61,33 @@ class ConsumerBase(Generic[T], ReusableThread):
             self.__queue.task_done()
 
 
-class ConsumerManagerBase(EnforceOverrides, Generic[T]):
+class ConsumerManagerBase(EnforceOverrides, Generic[ItemType]):
     def __init__(self):
-        self._consumer_map: Dict[LiteralString, ConsumerBase[T]] = {}
+        self._consumer_map: Dict[LiteralString, ConsumerBase[ItemType]] = {}
 
     @final
-    def add_consumer(self, consumer: ConsumerBase[T]) -> None:
+    def add_consumer(self, consumer: ConsumerBase[ItemType]) -> None:
         if consumer.__class__.__name__ in self._consumer_map:
             self.remove_consumer(consumer)
         self._consumer_map[consumer.__class__.__name__] = consumer
 
     @final
-    def remove_consumer(self, consumer: ConsumerBase[T]) -> None:
+    def remove_consumer(self, consumer: ConsumerBase[ItemType]) -> None:
         if consumer.__class__.__name__ in self._consumer_map:
             self._consumer_map[consumer.__class__.__name__].terminate()
             del self._consumer_map[consumer.__class__.__name__]
 
     @final
-    def _append_all(self, item: T) -> None:
+    def _append_all(self, item: ItemType) -> None:
         for consumer in self._consumer_map.values():
             consumer.append(item)
 
     @final
-    def _push_items_all(self, item_list: List[T]) -> None:
+    def _push_items_all(self, item_list: List[ItemType]) -> None:
         for consumer in self._consumer_map.values():
             consumer.push_items(item_list)
 
     @final
-    def _replace_items_all(self, item_list: List[T], force: bool) -> None:
+    def _replace_items_all(self, item_list: List[ItemType], force: bool) -> None:
         for consumer in self._consumer_map.values():
             consumer.replace_items(item_list, force)

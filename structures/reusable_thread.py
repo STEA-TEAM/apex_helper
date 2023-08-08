@@ -36,6 +36,10 @@ class ReusableThread(ABC, EnforceOverrides):
         pass
 
     @final
+    def _is_running(self) -> bool:
+        return self.__run_event.is_set()
+
+    @final
     def __thread_target(self):
         self._run_before_loop()
         while not self.__terminate_event.is_set():

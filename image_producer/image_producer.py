@@ -4,7 +4,7 @@ from time import sleep
 from .dxshot import DXCamera, create, device_info, output_info
 
 
-class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
+class ScreenRecorder(TaskerManagerBase[OpenCVImage], ReusableThread):
     @final
     @override
     def _thread_loop(self) -> None:

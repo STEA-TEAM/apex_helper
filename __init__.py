@@ -2,28 +2,33 @@ import threading
 
 from device_adapters import EmulateAdapter
 from image_debugger import ImageDebugger
-from image_producer import ImageProducer
+from image_producer import ScreenRecorder
 from input_handler import InputHandler
 from pynput.keyboard import Key, Listener
 from recoil_suppressor import RecoilSuppressor
+from structures import thread_manager
 from weapon_detector import WeaponDetector
 
 
 def on_press(key):
     if key == Key.delete:
-        emulate_adapter.terminate()
-        image_producer.terminate()
-        input_handler.terminate()
+        thread_manager.terminate()
 
 
 if __name__ == "__main__":
     emulate_adapter = EmulateAdapter()
-    image_producer = ImageProducer()
+    screen_recorder = ScreenRecorder()
     input_handler = InputHandler()
     recoil_suppressor = RecoilSuppressor()
     weapon_detector = WeaponDetector()
 
-    image_producer.add_tasker(weapon_detector)
+    (
+        thread_manager.register(emulate_adapter)
+        .register(screen_recorder)
+        .register(input_handler)
+    )
+
+    screen_recorder.add_tasker(weapon_detector)
     weapon_detector.set_debugger(ImageDebugger("Weapon Detector"))
     weapon_detector.add_subscriber(recoil_suppressor)
     input_handler.add_tasker(recoil_suppressor)
@@ -33,6 +38,4 @@ if __name__ == "__main__":
 
     print("Press delete to stop")
 
-    emulate_adapter.start()
-    image_producer.start()
-    input_handler.start()
+    thread_manager.start()

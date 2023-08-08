@@ -3,11 +3,10 @@ from typing import Generic, LiteralString, TypeVar, Dict
 
 from overrides import EnforceOverrides, final
 
-TaskerPayloadType = TypeVar("TaskerPayloadType")
-T = TypeVar("T")
+PayloadType = TypeVar("PayloadType")
 
 
-class TaskerBase(ABC, EnforceOverrides, Generic[TaskerPayloadType]):
+class TaskerBase(ABC, EnforceOverrides, Generic[PayloadType]):
     def __init__(self):
         self.__is_running: bool = False
 
@@ -18,12 +17,12 @@ class TaskerBase(ABC, EnforceOverrides, Generic[TaskerPayloadType]):
             self.__is_running = False
 
     @final
-    def restart(self, payload: TaskerPayloadType) -> None:
+    def restart(self, payload: PayloadType) -> None:
         self.abort()
         self.start(payload)
 
     @final
-    def start(self, payload: TaskerPayloadType) -> None:
+    def start(self, payload: PayloadType) -> None:
         if self.__is_running:
             print(f"{self.__class__.__name__} is already running")
             return
@@ -36,23 +35,22 @@ class TaskerBase(ABC, EnforceOverrides, Generic[TaskerPayloadType]):
         pass
 
     @abstractmethod
-    def _start_task(self, payload: TaskerPayloadType) -> None:
+    def _start_task(self, payload: PayloadType) -> None:
         pass
 
 
-class TaskerManagerBase(EnforceOverrides, Generic[T]):
-
+class TaskerManagerBase(Generic[PayloadType]):
     def __init__(self):
-        self._tasker_map: Dict[LiteralString, TaskerBase[T]] = {}
+        self._tasker_map: Dict[LiteralString, TaskerBase[PayloadType]] = {}
 
     @final
-    def add_tasker(self, tasker: TaskerBase[T]) -> None:
+    def add_tasker(self, tasker: TaskerBase[PayloadType]) -> None:
         if tasker.__class__.__name__ in self._tasker_map:
             self.remove_tasker(tasker)
         self._tasker_map[tasker.__class__.__name__] = tasker
 
     @final
-    def remove_tasker(self, tasker: TaskerBase[T]) -> None:
+    def remove_tasker(self, tasker: TaskerBase[PayloadType]) -> None:
         if tasker.__class__.__name__ in self._tasker_map:
             self._tasker_map[tasker.__class__.__name__].abort()
             del self._tasker_map[tasker.__class__.__name__]
@@ -63,11 +61,11 @@ class TaskerManagerBase(EnforceOverrides, Generic[T]):
             tasker.abort()
 
     @final
-    def _restart_tasks(self, payload: T) -> None:
+    def _restart_tasks(self, payload: PayloadType) -> None:
         for tasker in self._tasker_map.values():
             tasker.restart(payload)
 
     @final
-    def _start_tasks(self, payload: T) -> None:
+    def _start_tasks(self, payload: PayloadType) -> None:
         for tasker in self._tasker_map.values():
             tasker.start(payload)

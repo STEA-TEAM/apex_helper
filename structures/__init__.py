@@ -3,4 +3,4 @@ from .consumer import ConsumerBase, ConsumerManagerBase
 from .publisher_subscriber import PublisherBase, SubscriberBase
 from .reusable_thread import ReusableThread
 from .tasker import TaskerBase, TaskerManagerBase
-from .thread_controller import thread_controller
+from .thread_manager import thread_manager
