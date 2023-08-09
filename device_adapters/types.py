@@ -4,6 +4,7 @@ from typing import List, LiteralString, Tuple, TypeAlias
 
 
 class DeviceType(Enum):
+    Idle = "Idle"
     Mouse = "Mouse"
     Keyboard = "Keyboard"
 
@@ -32,4 +33,4 @@ Point: TypeAlias = Tuple[int, int]
 MouseEvent: TypeAlias = Tuple[List[MouseEventFlag], Point, MouseSideButton | int]
 KeyboardEvent: TypeAlias = List[Tuple[keyboard.Key | LiteralString, bool]]
 DeviceEvent: TypeAlias = MouseEvent | KeyboardEvent
-DeviceInstruction: TypeAlias = Tuple[DeviceType, MouseEvent | KeyboardEvent, float]
+DeviceInstruction: TypeAlias = Tuple[DeviceType, DeviceEvent | None, float]

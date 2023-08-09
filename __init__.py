@@ -1,5 +1,3 @@
-import threading
-
 from device_adapters import EmulateAdapter
 from image_debugger import ImageDebugger
 from image_producer import ScreenRecorder
