@@ -14,11 +14,6 @@ class AmmoType(Enum):
     Sentry = "Sentry"
 
 
-class AmmoInfo(TypedDict):
-    type: AmmoType
-    active: bool
-
-
 class WeaponIdentity(Enum):
     Alternator = "Alternator SMG"
     Bocek = "Bocek Compound Bow"

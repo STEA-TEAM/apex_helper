@@ -9,16 +9,16 @@ from image_debugger import ImageDebugger
 from structures import TaskerBase, PublisherBase
 from structures import OpenCVImage, Point, Rectangle
 from .constants import (
-    AMMO_COLOR_DICT,
     LEFT_SOLT,
     RIGHT_SOLT,
     WEAPON_ICON_AREA,
     WEAPON_INFO_DICT,
 )
-from .types import AmmoInfo, AmmoType, WeaponIdentity
+from .types import AmmoType, WeaponIdentity
 from .utils import (
     image_in_rectangle,
     image_relative_diff,
+    get_ammo_type,
     get_point_color,
     get_weapon_area,
     scale_screen,
@@ -72,27 +72,24 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
                 )
             )
 
-        ammo_info = self.__get_ammo_infos(cropped_image)
+        ammo_type = self.__get_ammo_type(cropped_image)
         if self.__is_aborted:
             return
 
-        weapon_identity = self.__get_weapon_identity(cropped_image, ammo_info)
+        weapon_identity = self.__get_weapon_identity(cropped_image, ammo_type)
         if self.__is_aborted:
             return
 
         if self.__debugger is not None:
-            ammo_info_text = f'     Ammo: {ammo_info["type"].value if ammo_info is not None else "Unknown"}'
+            ammo_type_text = f'     Ammo: {ammo_type.value}'
             weapon_identity_text = f"    Weapon: {weapon_identity}"
-            self.__debugger.add_texts([ammo_info_text, weapon_identity_text])
+            self.__debugger.add_texts([ammo_type_text, weapon_identity_text])
             self.__debugger.show()
 
         self._publish(weapon_identity)
 
     @final
-    def __get_ammo_infos(self, image: OpenCVImage) -> AmmoInfo | None:
-        weapon_left: AmmoInfo
-        weapon_right: AmmoInfo
-
+    def __get_ammo_type(self, image: OpenCVImage) -> AmmoType:
         weapon_left_color = get_point_color(image, LEFT_SOLT)
         weapon_right_color = get_point_color(image, RIGHT_SOLT)
 
@@ -100,30 +97,15 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
             self.__debugger.add_circle(LEFT_SOLT, 3)
             self.__debugger.add_circle(RIGHT_SOLT, 3)
 
-        if weapon_left_color in AMMO_COLOR_DICT:
-            weapon_left = AMMO_COLOR_DICT[weapon_left_color]
-        else:
-            weapon_left = {"type": AmmoType.Unknown, "active": False}
-
-        if weapon_right_color in AMMO_COLOR_DICT:
-            weapon_right = AMMO_COLOR_DICT[weapon_right_color]
-        else:
-            weapon_right = {"type": AmmoType.Unknown, "active": False}
-
-        if weapon_left["active"]:
-            return weapon_left
-        elif weapon_right["active"]:
-            return weapon_right
-        else:
-            return None
+        return get_ammo_type(weapon_left_color, weapon_right_color)
 
     @final
     def __get_weapon_identity(
-            self, image: OpenCVImage, ammo_info: AmmoInfo | None
+            self, image: OpenCVImage, ammo_type: AmmoType
     ) -> WeaponIdentity:
-        if ammo_info is None:
+        if ammo_type == AmmoType.Unknown:
             return WeaponIdentity.Unknown
-        weapon_info_list = WEAPON_INFO_DICT[ammo_info["type"]]
+        weapon_info_list = WEAPON_INFO_DICT[ammo_type]
         if weapon_info_list.__len__() == 1:
             return weapon_info_list[0]["identity"]
 

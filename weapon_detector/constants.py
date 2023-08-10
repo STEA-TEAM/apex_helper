@@ -1,7 +1,7 @@
 from structures import Point, Rectangle
 from typing import Dict, List
 
-from .types import AmmoType, AmmoInfo, WeaponInfo, WeaponIdentity
+from .types import AmmoType, WeaponInfo, WeaponIdentity
 
 ORIGIN_SCREEN_SIZE = 3840
 WEAPON_AREA_BOUNDARIES: Rectangle = ((832, 252), (101, 45))
@@ -9,63 +9,15 @@ WEAPON_ICON_AREA: Rectangle = ((74, 4), (400, 88))
 LEFT_SOLT: Point = (40, 170)
 RIGHT_SOLT: Point = (640, 170)
 
-AMMO_COLOR_DICT: Dict[int, AmmoInfo] = {
-    0x386B59: {
-        "type": AmmoType.Heavy,
-        "active": True
-    },
-    0x21342d: {
-        "type": AmmoType.Heavy,
-        "active": False
-    },
-    0x7d542d: {
-        "type": AmmoType.Light,
-        "active": True
-    },
-    0x3c2a1c: {
-        "type": AmmoType.Light,
-        "active": False
-    },
-    0x596e28: {
-        "type": AmmoType.Energy,
-        "active": True
-    },
-    0x2e361d: {
-        "type": AmmoType.Energy,
-        "active": False
-    },
-    0x6b2007: {
-        "type": AmmoType.Shotgun,
-        "active": True
-    },
-    0x30110a: {
-        "type": AmmoType.Shotgun,
-        "active": False
-    },
-    0x4b3f8f: {
-        "type": AmmoType.Sniper,
-        "active": True
-    },
-    0x241f43: {
-        "type": AmmoType.Sniper,
-        "active": False
-    },
-    0xb20136: {
-        "type": AmmoType.Mythic,
-        "active": True
-    },
-    0x54121f: {
-        "type": AmmoType.Mythic,
-        "active": False
-    },
-    0xa13ca1: {
-        "type": AmmoType.Sheila,
-        "active": True
-    },
-    0x3c6eb2: {
-        "type": AmmoType.Sentry,
-        "active": True
-    },
+AMMO_COLOR_DICT: Dict[AmmoType, int] = {
+    AmmoType.Energy: 0x596e28,
+    AmmoType.Heavy: 0x386B59,
+    AmmoType.Light: 0x7d542d,
+    AmmoType.Mythic: 0xb20136,
+    AmmoType.Sentry: 0x3c6eb2,
+    AmmoType.Sheila: 0xa13ca1,
+    AmmoType.Shotgun: 0x6b2007,
+    AmmoType.Sniper: 0x4b3f8f,
 }
 
 WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
