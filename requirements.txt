@@ -1,8 +1,9 @@
 PyAutoGUI~=0.9.54
-comtypes~=1.2.0
-numpy==1.25.2
+types-PyAutoGUI~=0.9.3.20240406
+comtypes~=1.4.2
+numpy==1.26.4
 opencv-python~=4.8.0.74
-overrides==7.4.0
-pillow~=10.0.0
+overrides==7.7.0
+pillow~=10.3.0
 pynput~=1.7.6
-https://github.com/qb-0/pyMeow/releases/download/1.43.25/pyMeow-1.43.25.zip
+types-pynput~=1.7.5.20240423
