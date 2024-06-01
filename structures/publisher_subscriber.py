@@ -1,4 +1,4 @@
-from typing import Dict, Generic, LiteralString, TypeVar
+from typing import Dict, Generic, AnyStr, TypeVar
 
 from overrides import final, EnforceOverrides
 
@@ -16,7 +16,7 @@ class SubscriberBase(EnforceOverrides, Generic[T]):
 
 class PublisherBase(EnforceOverrides):
     def __init__(self):
-        self.__subscribers: Dict[LiteralString, SubscriberBase] = {}
+        self.__subscribers: Dict[AnyStr, SubscriberBase] = {}
 
     @final
     def add_subscriber(self, subscriber: SubscriberBase[T]) -> None:

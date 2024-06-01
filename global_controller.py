@@ -1,10 +1,10 @@
 from pynput import keyboard
-from typing import Dict, LiteralString
+from typing import Dict, AnyStr
 
 
 class GlobalController:
     __keyboard_listener: keyboard.Listener
-    __thread_map: Dict[LiteralString, Thread] = {}
+    __thread_map: Dict[AnyStr, Thread] = {}
 
     def __init__(self):
         self.__keyboard_listener = keyboard.Listener(

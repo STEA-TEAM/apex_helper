@@ -2,7 +2,7 @@ from abc import abstractmethod
 from overrides import override, final, EnforceOverrides
 from queue import Queue, Empty
 from threading import Lock
-from typing import Generic, TypeVar, List, Dict, LiteralString
+from typing import Generic, TypeVar, List, Dict, AnyStr
 
 from .reusable_thread import ReusableThread
 
@@ -63,7 +63,7 @@ class ConsumerBase(Generic[ItemType], ReusableThread):
 
 class ConsumerManagerBase(EnforceOverrides, Generic[ItemType]):
     def __init__(self):
-        self._consumer_map: Dict[LiteralString, ConsumerBase[ItemType]] = {}
+        self._consumer_map: Dict[AnyStr, ConsumerBase[ItemType]] = {}
 
     @final
     def add_consumer(self, consumer: ConsumerBase[ItemType]) -> None:

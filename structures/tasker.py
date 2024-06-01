@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Generic, LiteralString, TypeVar, Dict
+from typing import Generic, TypeVar, Dict
 
 from overrides import EnforceOverrides, final
 
@@ -41,7 +41,7 @@ class TaskerBase(ABC, EnforceOverrides, Generic[PayloadType]):
 
 class TaskerManagerBase(Generic[PayloadType]):
     def __init__(self):
-        self._tasker_map: Dict[LiteralString, TaskerBase[PayloadType]] = {}
+        self._tasker_map: Dict[str, TaskerBase[PayloadType]] = {}
 
     @final
     def add_tasker(self, tasker: TaskerBase[PayloadType]) -> None:

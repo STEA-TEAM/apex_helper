@@ -1,17 +1,17 @@
 from datetime import datetime
 from structures import RGB, OpenCVImage, Point, Rectangle
-from typing import List, LiteralString
+from typing import List, AnyStr
 
 import cv2
 import numpy as np
 
 
 class ImageDebugger:
-    def __init__(self, window_name: LiteralString = "Image Debugger", custom_scale: float = 1.0):
+    def __init__(self, window_name: AnyStr = "Image Debugger", custom_scale: float = 1.0):
         self.__custom_scale: float = custom_scale
         self.__image: OpenCVImage | None = None
         self.__timestamps: List[float] = [datetime.now().timestamp()]
-        self.__window_name: LiteralString = window_name
+        self.__window_name: AnyStr = window_name
 
     def set_image(self, image: OpenCVImage):
         self.__image = image.copy()
@@ -26,7 +26,7 @@ class ImageDebugger:
 
     def add_texts(
             self,
-            texts: List[LiteralString],
+            texts: List[AnyStr],
             size: float = 0.5,
             color: RGB = (0, 0, 0),
             thickness: int = 1

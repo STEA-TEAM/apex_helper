@@ -1,11 +1,11 @@
 from overrides import EnforceOverrides, final
 from structures import ReusableThread
-from typing import Dict, LiteralString
+from typing import AnyStr, Dict
 
 
 class ThreadManager(EnforceOverrides):
     def __init__(self):
-        self._thread_map: Dict[LiteralString, ReusableThread] = {}
+        self._thread_map: Dict[AnyStr, ReusableThread] = {}
 
     @final
     def register(self, reusable_thread: ReusableThread) -> "ThreadManager":
