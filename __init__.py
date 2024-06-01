@@ -4,7 +4,7 @@ from image_producer import ScreenRecorder
 from input_handler import InputHandler
 from pynput.keyboard import Key, Listener
 
-from player_detector import PlayerDetector
+from player_detector import DeviceType, PlayerDetector
 from recoil_suppressor import RecoilSuppressor
 from structures import thread_manager
 from weapon_detector import WeaponDetector
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     emulate_adapter = EmulateAdapter()
     screen_recorder = ScreenRecorder()
     input_handler = InputHandler()
-    player_detector = PlayerDetector()
+    player_detector = PlayerDetector(DeviceType.Xpu)
     recoil_suppressor = RecoilSuppressor()
     weapon_detector = WeaponDetector()
 
