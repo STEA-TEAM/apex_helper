@@ -19,7 +19,7 @@ if __name__ == "__main__":
     emulate_adapter = EmulateAdapter()
     screen_recorder = ScreenRecorder()
     input_handler = InputHandler()
-    player_detector = PlayerDetector(DeviceType.Xpu)
+    player_detector = PlayerDetector(DeviceType.Cuda)
     recoil_suppressor = RecoilSuppressor()
     weapon_detector = WeaponDetector()
 

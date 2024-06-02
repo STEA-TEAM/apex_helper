@@ -3,6 +3,7 @@ import torch
 import math
 
 from cv2 import resize
+from numpy import floor
 from overrides import override, final
 from ultralytics import YOLO
 
@@ -49,15 +50,23 @@ class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
             )
         )
 
+        if self.__debugger is not None:
+            self.__debugger.set_image(
+                resize(cropped_image, (math.floor(cropped_image.shape[1] / 2), math.floor(cropped_image.shape[0] / 2)))
+            )
+
         if self.__is_aborted:
             return
 
-        results = self.__model.predict(source=cropped_image)
+        results = self.__model.predict(source=cropped_image, verbose=False)
         for result in results:
-            boxes = result.boxes
-            print(boxes.numpy())
-            # if self.__debugger is not None:
-            #     self.__debugger.add_rectangle(boxes.numpy())
+            for box in result.boxes:
+                dimensions = floor(box.xyxy[0].cpu().numpy() / 2).astype(int)
+                if self.__debugger is not None:
+                    self.__debugger.add_rectangle((
+                        (dimensions[0], dimensions[1]),
+                        (dimensions[2], dimensions[3])
+                    ))
             # masks = result.masks  # Masks object for segmentation masks outputs
             # keypoints = result.keypoints  # Keypoints object for pose outputs
             # probs = result.probs  # Probs object for classification outputs
@@ -66,11 +75,4 @@ class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
             # result.save(filename="result.jpg")  # save to disk
 
         if self.__debugger is not None:
-            self.__debugger.set_image(
-                resize(cropped_image, [math.floor(payload.shape[0] / 4), math.floor(payload.shape[0] / 4)])
-            )
             self.__debugger.show()
-
-        # model = YOLO("runs/detect/train2/weights/best.pt")  # load a pretrained model (recommended for training)
-
-        # torch.set_warn_always(False)
