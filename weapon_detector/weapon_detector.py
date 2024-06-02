@@ -64,9 +64,11 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
                     resize(
                         payload,
                         self.__scaled_shape,
-                        interpolation=INTER_AREA
-                        if self.__scaled_shape[0] < payload.shape[1]
-                        else INTER_CUBIC,
+                        interpolation=(
+                            INTER_AREA
+                            if self.__scaled_shape[0] < payload.shape[1]
+                            else INTER_CUBIC
+                        ),
                     ),
                     self.__weapon_area,
                 )
@@ -81,7 +83,7 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
             return
 
         if self.__debugger is not None:
-            ammo_type_text = f'     Ammo: {ammo_type.value}'
+            ammo_type_text = f"     Ammo: {ammo_type.value}"
             weapon_identity_text = f"    Weapon: {weapon_identity}"
             self.__debugger.add_texts([ammo_type_text, weapon_identity_text])
             self.__debugger.show()
@@ -101,7 +103,7 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
 
     @final
     def __get_weapon_identity(
-            self, image: OpenCVImage, ammo_type: AmmoType
+        self, image: OpenCVImage, ammo_type: AmmoType
     ) -> WeaponIdentity:
         if ammo_type == AmmoType.Unknown:
             return WeaponIdentity.Unknown
@@ -128,7 +130,7 @@ class WeaponDetector(TaskerBase[OpenCVImage], PublisherBase):
 
     @final
     def __get_weapon_eigenvalues(
-            self, image: OpenCVImage, threshold: float = 0.95
+        self, image: OpenCVImage, threshold: float = 0.95
     ) -> Tuple[float, float, float, float]:
         weapon_image = image_in_rectangle(image, WEAPON_ICON_AREA)
         weapon_image = image_relative_diff(weapon_image, weapon_image[-1, 0], threshold)

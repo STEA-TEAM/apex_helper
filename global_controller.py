@@ -9,8 +9,7 @@ class GlobalController:
 
     def __init__(self):
         self.__keyboard_listener = keyboard.Listener(
-            on_press=self.__on_press,
-            on_release=self.__on_release
+            on_press=self.__on_press, on_release=self.__on_release
         )
         self.__mouse_listener.start()
         self.__keyboard_listener.start()

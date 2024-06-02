@@ -10,14 +10,14 @@ LEFT_SOLT: Point = (40, 170)
 RIGHT_SOLT: Point = (640, 170)
 
 AMMO_COLOR_DICT: Dict[AmmoType, int] = {
-    AmmoType.Energy: 0x596e28,
+    AmmoType.Energy: 0x596E28,
     AmmoType.Heavy: 0x386B59,
-    AmmoType.Light: 0x7d542d,
-    AmmoType.Mythic: 0xb20136,
-    AmmoType.Sentry: 0x3c6eb2,
-    AmmoType.Sheila: 0xa13ca1,
-    AmmoType.Shotgun: 0x6b2007,
-    AmmoType.Sniper: 0x4b3f8f,
+    AmmoType.Light: 0x7D542D,
+    AmmoType.Mythic: 0xB20136,
+    AmmoType.Sentry: 0x3C6EB2,
+    AmmoType.Sheila: 0xA13CA1,
+    AmmoType.Shotgun: 0x6B2007,
+    AmmoType.Sniper: 0x4B3F8F,
 }
 
 WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
@@ -72,7 +72,6 @@ WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
             "eigenvalues": (8.7156, 100.0, 23.2143, 100.0),
             "identity": WeaponIdentity.Rampage,
         },
-
     ],
     AmmoType.Light: [
         {
@@ -128,7 +127,7 @@ WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
         {
             "eigenvalues": (21.5596, 92.2018, 12.5, 100.0),
             "identity": WeaponIdentity.LStar,
-        }
+        },
     ],
     AmmoType.Sentry: [
         {
@@ -176,6 +175,6 @@ WEAPON_INFO_DICT: Dict[AmmoType, List[WeaponInfo]] = {
         {
             "eigenvalues": (35.3211, 79.8165, 14.2857, 100.0),
             "identity": WeaponIdentity.Wingman,
-        }
+        },
     ],
 }

@@ -26,22 +26,31 @@ BIN_NUM = 10
 
 COLOR_MAP = {
     0x386B59: (0, 1),
-    0x21342d: (0, 0),
-    0x7d542d: (1, 1),
-    0x3c2a1c: (1, 0),
-    0x5a6e28: (2, 1),
-    0x2e371d: (2, 0),
-    0x6b2007: (3, 1),
-    0x30110a: (3, 0),
-    0x4b408f: (4, 1),
-    0x241f43: (4, 0),
-    0xb20137: (5, 1),
-    0x54121f: (5, 0),
-    0xa13ca1: (6, 1),
-    0x3c6eb2: (7, 1)
+    0x21342D: (0, 0),
+    0x7D542D: (1, 1),
+    0x3C2A1C: (1, 0),
+    0x5A6E28: (2, 1),
+    0x2E371D: (2, 0),
+    0x6B2007: (3, 1),
+    0x30110A: (3, 0),
+    0x4B408F: (4, 1),
+    0x241F43: (4, 0),
+    0xB20137: (5, 1),
+    0x54121F: (5, 0),
+    0xA13CA1: (6, 1),
+    0x3C6EB2: (7, 1),
 }
 
-TYPE_MAP = ["Heavy", "Light", "Energy", "Shotgun", "Sniper", "Legendary", "Saila", "Cyber"]
+TYPE_MAP = [
+    "Heavy",
+    "Light",
+    "Energy",
+    "Shotgun",
+    "Sniper",
+    "Legendary",
+    "Saila",
+    "Cyber",
+]
 
 WEAPON_PROP = [
     # 0-Heavy
@@ -50,7 +59,8 @@ WEAPON_PROP = [
         [0.469, 0.851, 0.269, "猎兽冲锋枪"],
         [0.847, 0.862, 0.145, "平行步枪"],
         [0.745, 0.816, 0.181, "CAR冲锋枪-重型子弹"],
-        [0.929, 0.667, 0.156, "30-30连发枪"]],
+        [0.929, 0.667, 0.156, "30-30连发枪"],
+    ],
     # 1-Light
     [
         [0.880, 0.782, 0.201, "G7侦察枪"],
@@ -60,36 +70,41 @@ WEAPON_PROP = [
         [0.365, 0.770, 0.130, "P2020手枪"],
         [0.380, 0.828, 0.278, "转换者冲锋枪"],
         [0.745, 0.816, 0.181, "CAR冲锋枪-轻型子弹"],
-        [0.399, 0.874, 0.223, "RE-45"]],
+        [0.399, 0.874, 0.223, "RE-45"],
+    ],
     # 2-Energy
     [
         [0.635, 0.747, 0.231, "电能冲锋枪"],
         [0.933, 0.897, 0.196, "三重式狙击步枪"],
         [0.883, 0.793, 0.224, "专注轻机枪"],
         [0.871, 0.793, 0.247, "复仇女神"],
-        [0.782, 0.828, 0.212, "哈沃克步枪"]],
+        [0.782, 0.828, 0.212, "哈沃克步枪"],
+    ],
     # 3-Shotgun
     [
         [0.475, 0.805, 0.256, "莫桑比克"],
         [0.853, 0.839, 0.189, "和平捍卫者"],
         [0.948, 0.782, 0.244, "敖犬霰弹枪"],
-        [0.819, 0.862, 0.173, "EVA-8"]],
+        [0.819, 0.862, 0.173, "EVA-8"],
+    ],
     # 4-Sniper
     [
         [0.764, 0.885, 0.311, "充能步枪"],
         [0.920, 0.667, 0.230, "长弓狙击步枪"],
         [0.969, 0.747, 0.225, "哨兵狙击步枪"],
-        [0.445, 0.839, 0.288, "小帮手"]],
+        [0.445, 0.839, 0.288, "小帮手"],
+    ],
     # 5-Legendary
     [
         [0.791, 0.897, 0.176, "赫姆洛克突击步枪"],
         [0.853, 0.839, 0.082, "波塞克复合弓"],
         [0.706, 0.874, 0.393, "L-Star"],
         [0.975, 0.782, 0.173, "克雷贝尔狙击枪"],
-        [0.709, 0.494, 0.279, "手感舒适的刀刃"]],
+        [0.709, 0.494, 0.279, "手感舒适的刀刃"],
+    ],
     [0, 0, 0, "塞拉转轮机枪"],
     [0, 0, 0, "赛博狙"],
-    [0, 0, 0, "无武器或窗口异常"]
+    [0, 0, 0, "无武器或窗口异常"],
 ]
 
 WEAPON_DATA = {
@@ -123,7 +138,7 @@ WEAPON_DATA = {
     "波塞克复合弓": [3, [1], [], []],
     "L-Star": [3, [1], [], []],
     "克雷贝尔狙击枪": [2, [], [], []],
-    "手感舒适的刀刃": [2, [], [], []]
+    "手感舒适的刀刃": [2, [], [], []],
 }
 
 ACC_COLOR = [
@@ -132,11 +147,22 @@ ACC_COLOR = [
     [46, 188, 255],
     [222, 107, 255],
     [255, 226, 0],
-    [255, 69, 69]
+    [255, 69, 69],
 ]
 
-ACC_NAME = ["弹夹", "瞄准镜", "枪管稳定器", "激光瞄准镜", "霰弹枪栓", "标准枪托", "狙击枪托", "穿颅器", "涡轮增压器",
-            "锤击点子弹", "双发扳机"]
+ACC_NAME = [
+    "弹夹",
+    "瞄准镜",
+    "枪管稳定器",
+    "激光瞄准镜",
+    "霰弹枪栓",
+    "标准枪托",
+    "狙击枪托",
+    "穿颅器",
+    "涡轮增压器",
+    "锤击点子弹",
+    "双发扳机",
+]
 
 AMMO_LOAD_POS = [
     [4, 42],
@@ -148,7 +174,7 @@ AMMO_LOAD_POS = [
     [37, 11],
     [13, 20],
     [37, 40],
-    [28, 37]
+    [28, 37],
 ]
 
 AMMO_LOAD_COL = []
@@ -171,7 +197,7 @@ AMMO_LOAD_DIGIT_MASK = [
     [255, 255, 255, 255, 0, 255, 0, 0, 255, 0],
     [255, 0, 0, 255, 0, 0, 255, 0, 0, 0],
     [255, 255, 255, 255, 0, 255, 255, 0, 255, 0],
-    [255, 0, 255, 255, 0, 255, 255, 0, 255, 0]
+    [255, 0, 255, 255, 0, 255, 255, 0, 255, 0],
 ]
 
 
@@ -184,7 +210,7 @@ def get_point_color(img, point):
 
 
 def get_part(img, pos):
-    ret = img[pos[1]:pos[3], pos[0]:pos[2]]
+    ret = img[pos[1] : pos[3], pos[0] : pos[2]]
     # cv2.imshow("part", ret)
     return ret
 
@@ -220,7 +246,9 @@ def stat_weapon_image(img):
     # print(weapon_board)
     Height = weapon_board[3] - weapon_board[1]
     Length = weapon_board[2] - weapon_board[0]
-    weapon = weapon[weapon_board[1]: weapon_board[3], weapon_board[0]: weapon_board[2]]
+    weapon = weapon[
+        weapon_board[1] : weapon_board[3], weapon_board[0] : weapon_board[2]
+    ]
     lr = np.round(Length / (WEAPON_IMAGE[2] - WEAPON_IMAGE[0]), 3)
     hr = np.round(Height / (WEAPON_IMAGE[3] - WEAPON_IMAGE[1]), 3)
     sr = np.round(np.sum(weapon) / Length / Height / 3 / ratio, 3)
@@ -265,7 +293,11 @@ def get_weapon(img, weapon_type):
         HR_VALUE = 1
         SR_VALUE = 1
         for weapon in WEAPON_PROP[weapon_type]:
-            comp_res.append(abs(prop[0] - weapon[0]) + abs(prop[1] - weapon[1]) + abs(prop[2] - weapon[2]))
+            comp_res.append(
+                abs(prop[0] - weapon[0])
+                + abs(prop[1] - weapon[1])
+                + abs(prop[2] - weapon[2])
+            )
         # print(comp_res)
         res = WEAPON_PROP[weapon_type][comp_res.index(min(comp_res))][3]
         # print(res)
@@ -291,27 +323,36 @@ def get_ammo_load(img, width=2):
     left_pos = 0
 
     # firsr digit
-    digit_img = ammo_img[:, left_pos:left_pos + AMMO_LOAD_SIZE[0]]
-    res = np.abs(np.array(AMMO_LOAD_DIGIT_MASK) - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten())
+    digit_img = ammo_img[:, left_pos : left_pos + AMMO_LOAD_SIZE[0]]
+    res = np.abs(
+        np.array(AMMO_LOAD_DIGIT_MASK)
+        - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten()
+    )
     res = np.sum(np.where(res == 255, 1, 0), axis=1)
     # print(res)
     if np.min(res) < 2:
         ammo_load += 10 * np.argmin(res)
-    left_pos += (AMMO_LOAD_SIZE[0] + AMMO_LOAD_SIZE[1])
+    left_pos += AMMO_LOAD_SIZE[0] + AMMO_LOAD_SIZE[1]
 
     # second digit
-    digit_img = ammo_img[:, left_pos:left_pos + AMMO_LOAD_SIZE[0]]
-    res = np.abs(np.array(AMMO_LOAD_DIGIT_MASK) - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten())
+    digit_img = ammo_img[:, left_pos : left_pos + AMMO_LOAD_SIZE[0]]
+    res = np.abs(
+        np.array(AMMO_LOAD_DIGIT_MASK)
+        - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten()
+    )
     res = np.sum(np.where(res == 255, 1, 0), axis=1)
     # print(digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten())
     if np.min(res) < 2:
         ammo_load += np.argmin(res)
-    left_pos += (AMMO_LOAD_SIZE[0] + AMMO_LOAD_SIZE[1])
+    left_pos += AMMO_LOAD_SIZE[0] + AMMO_LOAD_SIZE[1]
 
     # third digit
     if width == 3:
-        digit_img = ammo_img[:, left_pos:left_pos + AMMO_LOAD_SIZE[0]]
-        res = np.abs(np.array(AMMO_LOAD_DIGIT_MASK) - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten())
+        digit_img = ammo_img[:, left_pos : left_pos + AMMO_LOAD_SIZE[0]]
+        res = np.abs(
+            np.array(AMMO_LOAD_DIGIT_MASK)
+            - digit_img[AMMO_LOAD_ROW, AMMO_LOAD_COL].flatten()
+        )
         res = np.sum(np.where(res == 255, 1, 0), axis=1)
         if np.min(res) < 2:
             ammo_load = 10 * ammo_load + np.argmin(res)
@@ -347,7 +388,7 @@ def get_fire_mode(img):
     return ret
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Get Screen Size
     screen_size = pyautogui.size()
@@ -359,11 +400,12 @@ if __name__ == '__main__':
     # Get wwapon area
     area_width = round(731 * scale)
     area_height = round(207 * scale)
-    area_pos = (screen_size[0] - area_width - round(101 * scale),
-                screen_size[1] - area_height - round(45 * scale),
-                area_width,
-                area_height
-                )
+    area_pos = (
+        screen_size[0] - area_width - round(101 * scale),
+        screen_size[1] - area_height - round(45 * scale),
+        area_width,
+        area_height,
+    )
 
     # cv2.waitKey(0)
     # cv2.imshow("scrshot", cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR))
@@ -372,7 +414,9 @@ if __name__ == '__main__':
     # Working Code
     while True:
         # print("Begin  :", datetime.now())
-        img = cv2.cvtColor(np.asarray(pyautogui.screenshot(region=area_pos)), cv2.COLOR_RGB2BGR)
+        img = cv2.cvtColor(
+            np.asarray(pyautogui.screenshot(region=area_pos)), cv2.COLOR_RGB2BGR
+        )
         img = cv2.resize(img, (round(area_pos[2] / scale), round(area_pos[3] / scale)))
         # print("Capture:", datetime.now())
         cv2.imshow("img", img)
@@ -385,7 +429,12 @@ if __name__ == '__main__':
         acc_level = get_accessory(img, len(WEAPON_DATA[res][1]))
         acc_info = ""
         for acc in range(len(WEAPON_DATA[res][1])):
-            acc_info += ACC_NAME[WEAPON_DATA[res][1][acc]] + " - Lv." + str(acc_level[acc]) + " "
+            acc_info += (
+                ACC_NAME[WEAPON_DATA[res][1][acc]]
+                + " - Lv."
+                + str(acc_level[acc])
+                + " "
+            )
         print("Result :", res, end=" ")
         print("Ammo :", ammo_load, end=" ")
         print("Acc Info:", acc_info)

@@ -38,5 +38,11 @@ class KeyReleaseEvent(TypedDict):
     key: keyboard.Key | keyboard.KeyCode
 
 
-InputEvent: TypeAlias = MouseMoveEvent | MouseClickEvent | MouseScrollEvent | KeyPressEvent | KeyReleaseEvent
+InputEvent: TypeAlias = (
+    MouseMoveEvent
+    | MouseClickEvent
+    | MouseScrollEvent
+    | KeyPressEvent
+    | KeyReleaseEvent
+)
 InputPayload: TypeAlias = Tuple[InputType, InputEvent]

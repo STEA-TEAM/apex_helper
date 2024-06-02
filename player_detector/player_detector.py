@@ -15,15 +15,16 @@ from weapon_detector.utils import image_in_rectangle
 
 
 class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
-
-    def __init__(self, device_type: DeviceType = DeviceType.Cuda, model_image_size: int = 640):
+    def __init__(
+        self, device_type: DeviceType = DeviceType.Cuda, model_image_size: int = 640
+    ):
         if device_type == DeviceType.Xpu:
             # noinspection PyUnresolvedReferences
             import intel_extension_for_pytorch as ipex
         self.__debugger: ImageDebugger | None = None
         self.__is_aborted: bool = False
         self.__model_image_size: int = model_image_size
-        self.__model = YOLO('best.pt').to(device_type.value)
+        self.__model = YOLO("best.pt").to(device_type.value)
         TaskerBase.__init__(self)
         PublisherBase.__init__(self)
         print(f"Initialized with model image size: {model_image_size}")
@@ -46,13 +47,22 @@ class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
             payload,
             (
                 (math.floor(payload.shape[1] / 2 - payload.shape[0] / 2), 0),
-                (math.floor(payload.shape[1] / 2 + payload.shape[0] / 2), payload.shape[0])
-            )
+                (
+                    math.floor(payload.shape[1] / 2 + payload.shape[0] / 2),
+                    payload.shape[0],
+                ),
+            ),
         )
 
         if self.__debugger is not None:
             self.__debugger.set_image(
-                resize(cropped_image, (math.floor(cropped_image.shape[1] / 2), math.floor(cropped_image.shape[0] / 2)))
+                resize(
+                    cropped_image,
+                    (
+                        math.floor(cropped_image.shape[1] / 2),
+                        math.floor(cropped_image.shape[0] / 2),
+                    ),
+                )
             )
 
         if self.__is_aborted:
@@ -63,10 +73,9 @@ class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
             for box in result.boxes:
                 dimensions = floor(box.xyxy[0].cpu().numpy() / 2).astype(int)
                 if self.__debugger is not None:
-                    self.__debugger.add_rectangle((
-                        (dimensions[0], dimensions[1]),
-                        (dimensions[2], dimensions[3])
-                    ))
+                    self.__debugger.add_rectangle(
+                        ((dimensions[0], dimensions[1]), (dimensions[2], dimensions[3]))
+                    )
             # masks = result.masks  # Masks object for segmentation masks outputs
             # keypoints = result.keypoints  # Keypoints object for pose outputs
             # probs = result.probs  # Probs object for classification outputs

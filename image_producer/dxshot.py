@@ -2,7 +2,7 @@ import os
 import sys
 from typing import TypeAlias
 
-sys.path.append(f'{os.path.dirname(os.path.realpath(__file__))}/libs')
+sys.path.append(f"{os.path.dirname(os.path.realpath(__file__))}/libs")
 
 
 class DxShot:
