@@ -1,4 +1,3 @@
-# noinspection PyUnresolvedReferences
 import torch
 import math
 
@@ -8,23 +7,30 @@ from overrides import override, final
 from ultralytics import YOLO
 
 from image_debugger import ImageDebugger
-from player_detector.types import DeviceType
 from structures import TaskerBase, PublisherBase
 from structures import OpenCVImage
 from weapon_detector.utils import image_in_rectangle
 
 
+def get_torch_device():
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    try:
+        import intel_extension_for_pytorch as ipex
+        if ipex.xpu.is_available():
+            return torch.device("xpu")
+    except ImportError as e:
+        ipex = e
+        print("Error importing intel_extension_for_pytorch: ", ipex)
+    return torch.device("cpu")
+
+
 class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
-    def __init__(
-        self, device_type: DeviceType = DeviceType.Cuda, model_image_size: int = 640
-    ):
-        if device_type == DeviceType.Xpu:
-            # noinspection PyUnresolvedReferences
-            import intel_extension_for_pytorch as ipex
+    def __init__(self, model_image_size: int = 640):
         self.__debugger: ImageDebugger | None = None
         self.__is_aborted: bool = False
         self.__model_image_size: int = model_image_size
-        self.__model = YOLO("best.pt").to(device_type.value)
+        self.__model = YOLO("best.pt").to(get_torch_device())
         TaskerBase.__init__(self)
         PublisherBase.__init__(self)
         print(f"Initialized with model image size: {model_image_size}")

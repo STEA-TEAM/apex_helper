@@ -1,1 +1,1 @@
-from .image_producer import ScreenRecorder
+from .image_producer import ImageProducer
