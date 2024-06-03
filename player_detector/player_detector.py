@@ -4,6 +4,7 @@ import math
 from cv2 import resize
 from numpy import floor
 from overrides import override, final
+from typing import AnyStr
 from ultralytics import YOLO
 
 from image_debugger import ImageDebugger
@@ -26,11 +27,11 @@ def get_torch_device():
 
 
 class PlayerDetector(TaskerBase[OpenCVImage], PublisherBase):
-    def __init__(self, model_image_size: int = 640):
+    def __init__(self, model_path: AnyStr, model_image_size: int = 640):
         self.__debugger: ImageDebugger | None = None
         self.__is_aborted: bool = False
         self.__model_image_size: int = model_image_size
-        self.__model = YOLO("best.pt").to(get_torch_device())
+        self.__model = YOLO(model_path).to(get_torch_device())
         TaskerBase.__init__(self)
         PublisherBase.__init__(self)
         print(f"Initialized with model image size: {model_image_size}")

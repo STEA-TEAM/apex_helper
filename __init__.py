@@ -19,7 +19,7 @@ if __name__ == "__main__":
     emulate_adapter = EmulateAdapter()
     image_producer = ImageProducer()
     input_handler = InputHandler()
-    player_detector = PlayerDetector()
+    player_detector = PlayerDetector("apex_8s.pt")
     recoil_suppressor = RecoilSuppressor()
     weapon_detector = WeaponDetector()
 
