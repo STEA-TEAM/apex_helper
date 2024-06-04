@@ -35,7 +35,6 @@ dependencies:
       - filelock==3.14.0
       - fonttools==4.53.0
       - fsspec==2024.5.0
-      - https://github.com/qb-0/pyMeow/releases/download/1.73.42/pyMeow-1.73.42.zip
       - intel-extension-for-pytorch==2.1.30+xpu
       - kiwisolver==1.4.5
       - markupsafe==2.1.5

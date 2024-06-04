@@ -1,12 +1,12 @@
 import bettercam
-from image_debugger import ImageDebugger
+import cv2
 
 if __name__ == "__main__":
     camera = bettercam.create(output_color="BGR")
     camera.start(target_fps=240)
-    image_debugger = ImageDebugger()
-    for i in range(500):
+    while camera.is_capturing:
         frame = camera.get_latest_frame()
-        image_debugger.set_image(frame)
-        # image_debugger.show()
+        cv2.imshow("frame", frame)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
+            break
     camera.stop()
