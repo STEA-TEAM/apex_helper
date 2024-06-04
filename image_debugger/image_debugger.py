@@ -89,14 +89,14 @@ class ImageDebugger:
                 1,
                 cv2.LINE_AA,
             )
-            cv2.imshow(
-                self.__window_name,
-                cv2.resize(
-                    image,
-                    None,
-                    fx=self.__custom_scale,
-                    fy=self.__custom_scale,
-                    interpolation=cv2.INTER_LINEAR,
-                ),
-            )
-            cv2.waitKey(1)
+            # cv2.imshow(
+            #     self.__window_name,
+            #     cv2.resize(
+            #         image,
+            #         None,
+            #         fx=self.__custom_scale,
+            #         fy=self.__custom_scale,
+            #         interpolation=cv2.INTER_LINEAR,
+            #     ),
+            # )
+            # cv2.waitKey(1)

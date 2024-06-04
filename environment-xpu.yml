@@ -35,7 +35,9 @@ dependencies:
       - filelock==3.14.0
       - fonttools==4.53.0
       - fsspec==2024.5.0
-      - intel-extension-for-pytorch==2.1.30+xpu
+      - idna==3.7
+      - intel-extension-for-pytorch==2.1.30.post0
+      - jinja2==3.1.4
       - kiwisolver==1.4.5
       - markupsafe==2.1.5
       - matplotlib==3.9.0

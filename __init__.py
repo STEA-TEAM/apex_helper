@@ -32,10 +32,10 @@ if __name__ == "__main__":
     image_producer.add_tasker(weapon_detector)
     image_producer.add_tasker(player_detector)
 
-    # weapon_detector.set_debugger(ImageDebugger("Weapon Detector"))
+    weapon_detector.set_debugger(ImageDebugger("Weapon Detector"))
     weapon_detector.add_subscriber(recoil_suppressor)
 
-    # player_detector.set_debugger(ImageDebugger("Player Detector"))
+    player_detector.set_debugger(ImageDebugger("Player Detector"))
 
     input_handler.add_tasker(recoil_suppressor)
     recoil_suppressor.add_consumer(emulate_adapter)
