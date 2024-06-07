@@ -1,9 +1,8 @@
-from typing import Tuple, TypeAlias
-
 from numpy import ndarray
+from typing import Tuple, TypeAlias
 
 RGB: TypeAlias = Tuple[int, int, int]
 RGBA: TypeAlias = Tuple[int, int, int, int]
-OpenCVImage: TypeAlias = ndarray
+CV2Image: TypeAlias = ndarray
 Point: TypeAlias = Tuple[int, int]
 Rectangle: TypeAlias = Tuple[Point, Point]

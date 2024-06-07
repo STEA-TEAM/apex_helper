@@ -1,7 +1,7 @@
 from typing import Dict, List
 
-from device_adapters import DeviceType, DeviceInstruction, MouseEventFlag
-from weapon_detector import WeaponIdentity
+from components.device_adapters import DeviceType, DeviceInstruction, MouseEventFlag
+from components.weapon_detector import WeaponIdentity
 
 # For sensitivity 1.0
 RECOIL_SUPPRESSION_DICT: Dict[WeaponIdentity, List[DeviceInstruction]] = {

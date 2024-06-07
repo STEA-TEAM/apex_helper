@@ -1,7 +1,6 @@
 from overrides import final, override
 from pynput import mouse, keyboard
-
-from structures import TaskerManagerBase, ConsumerBase
+from structures import ConsumerBase, TaskerManagerBase
 from .types import InputPayload, InputType
 
 
@@ -18,6 +17,8 @@ class InputHandler(ConsumerBase[InputPayload], TaskerManagerBase[InputPayload]):
 
         ConsumerBase.__init__(self)
         TaskerManagerBase.__init__(self)
+
+        print("InputHandler initialized.")
 
     @final
     @override

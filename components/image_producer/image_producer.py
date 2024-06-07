@@ -1,10 +1,10 @@
 from bettercam import BetterCam, create, device_info, output_info
 from overrides import final, override
-from structures import OpenCVImage, TaskerManagerBase, ReusableThread
-from time import sleep
+
+from structures import CV2Image, ReusableThread, TaskerManagerBase
 
 
-class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
+class ImageProducer(TaskerManagerBase[CV2Image], ReusableThread):
     @final
     @override
     def _thread_loop(self) -> None:
@@ -12,7 +12,7 @@ class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
         self._start_tasks(image)
 
     def __init__(self):
-        print("Initializing BetterCam...")
+        print("ImageProducer initializing...")
         print(device_info())
         print(output_info())
 
@@ -20,6 +20,8 @@ class ImageProducer(TaskerManagerBase[OpenCVImage], ReusableThread):
 
         TaskerManagerBase.__init__(self)
         ReusableThread.__init__(self)
+
+        print("ImageProducer initialized.")
 
     @final
     @override

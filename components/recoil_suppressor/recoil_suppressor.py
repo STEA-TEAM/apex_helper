@@ -1,10 +1,10 @@
-from device_adapters import DeviceInstruction
-from input_handler import InputPayload, InputType, MouseClickEvent
+from components.device_adapters import DeviceInstruction
+from components.input_handler import InputPayload, InputType, MouseClickEvent
 from overrides import override, final
 from pynput import mouse
 from structures import TaskerBase, SubscriberBase, ConsumerManagerBase
 from typing import cast
-from weapon_detector import WeaponIdentity
+from components.weapon_detector import WeaponIdentity
 
 from .constants import RECOIL_SUPPRESSION_DICT
 
@@ -18,6 +18,8 @@ class RecoilSuppressor(
         TaskerBase.__init__(self)
         ConsumerManagerBase.__init__(self)
         SubscriberBase.__init__(self)
+
+        print("RecoilSuppressor initialized")
 
     @final
     @override

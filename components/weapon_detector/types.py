@@ -1,5 +1,7 @@
 from enum import Enum
-from typing import Tuple, TypedDict
+from typing import Tuple, TypeAlias, TypedDict
+
+EigenValues: TypeAlias = Tuple[float, float, float, float]
 
 
 class AmmoType(Enum):

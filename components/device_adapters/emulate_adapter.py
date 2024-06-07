@@ -2,8 +2,8 @@ from ctypes import windll
 from functools import reduce
 from overrides import final, override
 from pynput import keyboard
-from structures import ConsumerBase
 from time import sleep
+from structures import ConsumerBase
 from typing import cast
 
 from .types import DeviceType, KeyboardEvent, MouseEvent, DeviceInstruction
@@ -14,6 +14,8 @@ class EmulateAdapter(ConsumerBase[DeviceInstruction]):
         self.__keyboard: keyboard.Controller = keyboard.Controller()
 
         super().__init__()
+
+        print("EmulateAdapter initialized")
 
     @final
     @override

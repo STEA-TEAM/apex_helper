@@ -4,7 +4,7 @@ from queue import Queue, Empty
 from threading import Lock
 from typing import Generic, TypeVar, List, Dict, AnyStr
 
-from .reusable_thread import ReusableThread
+from structures.containers.reusable_thread import ReusableThread
 
 ItemType = TypeVar("ItemType")
 
@@ -13,6 +13,7 @@ class ConsumerBase(Generic[ItemType], ReusableThread):
     def __init__(self):
         self.__queue: Queue[ItemType] = Queue[ItemType]()
         self.__queue_lock: Lock = Lock()
+
         ReusableThread.__init__(self)
 
     @final
