@@ -2,7 +2,7 @@ import cv2
 
 from enum import Enum
 from numpy import ndarray
-from structures import CV2Image, Point, Rectangle, RGB
+from structures import CV2Image, Point, Rectangle, RGBA
 from typing import Any, AnyStr, List, Tuple
 
 
@@ -18,12 +18,12 @@ class ImageEditor:
         self.edit_history: List[Tuple[EditType, List[Any]]] = []
 
     def add_circle(
-        self, center: Point, radius: int, color: RGB = (0, 0, 255), thickness: int = 1
+        self, center: Point, radius: int, color: RGBA = (0, 0, 255, 255), thickness: int = 3
     ):
         self.edit_history.append((EditType.CIRCLE, [center, radius, color, thickness]))
 
     def add_rectangle(
-        self, rectangle: Rectangle, color: RGB = (0, 0, 255), thickness: int = 1
+        self, rectangle: Rectangle, color: RGBA = (0, 0, 255, 255), thickness: int = 3
     ):
         self.edit_history.append((EditType.RECTANGLE, [rectangle, color, thickness]))
 
@@ -31,9 +31,9 @@ class ImageEditor:
         self,
         text: AnyStr,
         position: Point,
-        size: float = 0.5,
-        color: RGB = (0, 0, 255),
-        thickness: int = 1,
+        size: float = 1.0,
+        color: RGBA = (0, 0, 255, 255),
+        thickness: int = 3,
     ):
         self.edit_history.append(
             (EditType.TEXT, [text, position, size, color, thickness])

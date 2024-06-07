@@ -71,7 +71,9 @@ class ThreadManager(EnforceOverrides):
 
     @final
     def start(self) -> "ThreadManager":
-        print(f"Starting {self._thread_map.__len__()} threads: {', '.join(self._thread_map.keys())}")
+        print(
+            f"Starting {self._thread_map.__len__()} threads: {', '.join(self._thread_map.keys())}"
+        )
         for reusable_thread in self._thread_map.values():
             reusable_thread.start()
         return self

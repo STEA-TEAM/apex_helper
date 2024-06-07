@@ -61,6 +61,10 @@ class WeaponDetector(TaskerBase[CV2Image], PublisherBase):
             (offset[0] + RIGHT_SOLT[0], offset[1] + RIGHT_SOLT[1]), 3
         )
         image_editor.add_rectangle(
+            self.__weapon_area,
+            (255, 255, 255, 127)
+        )
+        image_editor.add_rectangle(
             (
                 (
                     offset[0] + WEAPON_ICON_AREA[0][0],
@@ -79,7 +83,7 @@ class WeaponDetector(TaskerBase[CV2Image], PublisherBase):
             get_point_color(cropped_image, LEFT_SOLT),
             get_point_color(cropped_image, RIGHT_SOLT),
         )
-        image_editor.add_text(f"Ammo: {ammo_type.value}", (offset[0], offset[1] - 15))
+        image_editor.add_text(f"Ammo: {ammo_type.value}", (offset[0], offset[1] - 75))
         if self.__is_aborted:
             return
 
@@ -101,16 +105,16 @@ class WeaponDetector(TaskerBase[CV2Image], PublisherBase):
                     + bounding_rectangle[3],
                 ),
             ),
-            (255, 255, 0),
+            (255, 255, 0, 255),
         )
         image_editor.add_text(
-            f"Eigen values: {eigen_values}", (offset[0], offset[1] - 10)
+            f"Eigen values: {eigen_values}", (offset[0], offset[1] - 45)
         )
         if self.__is_aborted:
             return
 
         weapon_identity = get_weapon_identity(eigen_values, ammo_type)
-        image_editor.add_text(f"Weapon: {weapon_identity}", (offset[0], offset[1] - 5))
+        image_editor.add_text(f"Weapon: {weapon_identity}", (offset[0], offset[1] - 15))
         if self.__is_aborted:
             return
 

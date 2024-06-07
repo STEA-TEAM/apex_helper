@@ -12,8 +12,9 @@ from typing import AnyStr
 from ultralytics import YOLO
 from utils import image_in_rectangle
 
-import torch
+import cv2
 import math
+import torch
 
 
 def get_torch_device():
@@ -66,19 +67,34 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
         if self.__is_aborted:
             return
 
-        image_editor = ImageEditor(payload)
+        image_editor = ImageEditor(cv2.cvtColor(payload, cv2.COLOR_BGR2BGRA))
+        image_editor.add_rectangle(
+            (
+                offset,
+                (
+                    math.floor((payload.shape[1] + payload.shape[0]) / 2),
+                    payload.shape[0],
+                ),
+            ),
+            (255, 255, 255, 127)
+        )
 
         for result in self.__model.predict(source=cropped_image, verbose=False):
             for box in result.boxes.cpu():
-                dimension = floor(box.xyxy[0].numpy() / 2).astype(int)
+                dimension = floor(box.xyxy[0].numpy()).astype(int)
+                class_name = self.__model.names[int(box.cls)]
                 image_editor.add_rectangle(
                     (
                         (offset[0] + dimension[0], offset[1] + dimension[1]),
                         (offset[0] + dimension[2], offset[1] + dimension[3]),
-                    )
+                    ),
+                    class_name == "allies" and (0, 255, 0, 255) or (0, 0, 255, 255),
                 )
                 image_editor.add_text(
-                    self.__model.names[int(box.cls)], (offset[0] + dimension[0], offset[1] + dimension[1] - 5)
+                    class_name,
+                    (offset[0] + dimension[0], offset[1] + dimension[1] - 10),
+                    1.0,
+                    class_name == "allies" and (0, 255, 0, 255) or (0, 0, 255, 255),
                 )
 
         self.__ndi_helper.send(image_editor.image)

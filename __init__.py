@@ -1,19 +1,22 @@
-from pynput.keyboard import Key, Listener
-
 from components import (
     EmulateAdapter,
     ImageProducer,
     InputHandler,
     PlayerDetector,
     RecoilSuppressor,
-    WeaponDetector
+    WeaponDetector,
 )
+from pynput.keyboard import Key, Listener
 from structures import thread_manager
+
+import os
+import signal
 
 
 def on_press(key):
     if key == Key.delete:
         thread_manager.terminate()
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 if __name__ == "__main__":
