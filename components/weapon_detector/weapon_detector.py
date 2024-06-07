@@ -60,10 +60,7 @@ class WeaponDetector(TaskerBase[CV2Image], PublisherBase):
         image_editor.add_circle(
             (offset[0] + RIGHT_SOLT[0], offset[1] + RIGHT_SOLT[1]), 3
         )
-        image_editor.add_rectangle(
-            self.__weapon_area,
-            (255, 255, 255, 127)
-        )
+        image_editor.add_rectangle(self.__weapon_area, (255, 255, 255, 127))
         image_editor.add_rectangle(
             (
                 (

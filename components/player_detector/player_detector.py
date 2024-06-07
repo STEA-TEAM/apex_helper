@@ -17,8 +17,8 @@ import numpy as np
 import torch
 
 color_mapping = [
+    (0, 255, 255, 255),  # allies
     (0, 0, 255, 255),  # enemies
-    (0, 255, 0, 255),  # allies
     (255, 255, 0, 255),  # tags
 ]
 
@@ -82,7 +82,7 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
                     payload.shape[0],
                 ),
             ),
-            (255, 255, 255, 127)
+            (255, 255, 255, 127),
         )
 
         for result in self.__model.predict(source=cropped_image, verbose=False):

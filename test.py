@@ -67,9 +67,11 @@ def main():
                     payload.shape[0],
                 ),
             ),
-            (255, 255, 255, 127)
+            (255, 255, 255, 127),
         )
-        for result in model.predict(source=cv2.cvtColor(cropped_image, cv2.COLOR_BGRA2BGR), verbose=False):
+        for result in model.predict(
+            source=cv2.cvtColor(cropped_image, cv2.COLOR_BGRA2BGR), verbose=False
+        ):
             for box in result.boxes.cpu():
                 dimension = np.floor(box.xyxy[0].numpy()).astype(int)
                 class_name = model.names[int(box.cls)]

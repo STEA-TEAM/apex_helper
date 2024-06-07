@@ -18,7 +18,11 @@ class ImageEditor:
         self.edit_history: List[Tuple[EditType, List[Any]]] = []
 
     def add_circle(
-        self, center: Point, radius: int, color: RGBA = (0, 0, 255, 255), thickness: int = 3
+        self,
+        center: Point,
+        radius: int,
+        color: RGBA = (0, 0, 255, 255),
+        thickness: int = 3,
     ):
         self.edit_history.append((EditType.CIRCLE, [center, radius, color, thickness]))
 

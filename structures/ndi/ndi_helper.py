@@ -25,8 +25,8 @@ class NdiHelper:
     def send(self, image: CV2Image) -> None:
         fps_text = f"Fps: {self.__calculate_fps()}"
         image_editor = ImageEditor(image)
-        image_editor.add_text(fps_text, (5, 15), 0.5, (127, 127, 127, 255), 5)
-        image_editor.add_text(fps_text, (5, 15), 0.5, (255, 255, 0, 255), 1)
+        image_editor.add_text(fps_text, (5, 30), 1.0, (127, 127, 127, 255), 5)
+        image_editor.add_text(fps_text, (5, 30), 1.0, (255, 255, 0, 255), 1)
         data = image_editor.image
         self.__video_frame.data = data
         NDIlib.send_send_video_v2(self.__ndi_send, self.__video_frame)

@@ -9,33 +9,33 @@ from components import (
 from pynput.keyboard import Key, Listener
 from structures import thread_manager
 
-import os
-import signal
-
 
 def on_press(key):
     if key == Key.delete:
+        global listener
         thread_manager.terminate()
-        os.kill(os.getpid(), signal.SIGINT)
+        listener.stop()
 
+
+listener = Listener(on_press=on_press)
 
 if __name__ == "__main__":
-    emulate_adapter = EmulateAdapter()
+    # emulate_adapter = EmulateAdapter()
     image_producer = ImageProducer()
-    input_handler = InputHandler()
+    # input_handler = InputHandler()
     player_detector = PlayerDetector("apex_8s.pt")
-    recoil_suppressor = RecoilSuppressor()
+    # recoil_suppressor = RecoilSuppressor()
     weapon_detector = WeaponDetector()
 
     image_producer.add_tasker(weapon_detector)
     image_producer.add_tasker(player_detector)
 
-    input_handler.add_tasker(recoil_suppressor)
+    # input_handler.add_tasker(recoil_suppressor)
 
-    weapon_detector.add_subscriber(recoil_suppressor)
+    # weapon_detector.add_subscriber(recoil_suppressor)
 
-    recoil_suppressor.add_consumer(emulate_adapter)
+    # recoil_suppressor.add_consumer(emulate_adapter)
 
-    Listener(on_press=on_press).start()
+    listener.start()
     print("Press delete to stop")
     thread_manager.start()
