@@ -1,4 +1,3 @@
-from numpy import floor
 from overrides import override, final
 from structures import (
     CV2Image,
@@ -14,7 +13,14 @@ from utils import image_in_rectangle
 
 import cv2
 import math
+import numpy as np
 import torch
+
+color_mapping = [
+    (0, 0, 255, 255),  # enemies
+    (0, 255, 0, 255),  # allies
+    (255, 255, 0, 255),  # tags
+]
 
 
 def get_torch_device():
@@ -81,20 +87,21 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
 
         for result in self.__model.predict(source=cropped_image, verbose=False):
             for box in result.boxes.cpu():
-                dimension = floor(box.xyxy[0].numpy()).astype(int)
+                dimension = np.floor(box.xyxy[0].numpy()).astype(int)
                 class_name = self.__model.names[int(box.cls)]
+                color = color_mapping[int(box.cls)]
                 image_editor.add_rectangle(
                     (
                         (offset[0] + dimension[0], offset[1] + dimension[1]),
                         (offset[0] + dimension[2], offset[1] + dimension[3]),
                     ),
-                    class_name == "allies" and (0, 255, 0, 255) or (0, 0, 255, 255),
+                    color,
                 )
                 image_editor.add_text(
                     class_name,
                     (offset[0] + dimension[0], offset[1] + dimension[1] - 10),
                     1.0,
-                    class_name == "allies" and (0, 255, 0, 255) or (0, 0, 255, 255),
+                    color,
                 )
 
         self.__ndi_helper.send(image_editor.image)
