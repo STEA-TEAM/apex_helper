@@ -32,7 +32,7 @@ class NdiHelper:
         image_editor.add_text(fps_text, (5, 15), 0.5, (255, 255, 0), 1)
         data = cv2.cvtColor(image_editor.image, cv2.COLOR_BGR2BGRA)
         self.__video_frame.data = data
-        NDIlib.send_send_video_async_v2(self.__ndi_send, self.__video_frame)
+        NDIlib.send_send_video_v2(self.__ndi_send, self.__video_frame)
 
     def __calculate_fps(self) -> float:
         self.__timestamps.append(datetime.now().timestamp())

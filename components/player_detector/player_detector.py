@@ -69,7 +69,7 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
         image_editor = ImageEditor(payload)
 
         for result in self.__model.predict(source=cropped_image, verbose=False):
-            for box in result.boxes:
+            for box in result.boxes.cpu():
                 dimension = floor(box.xyxy[0].numpy() / 2).astype(int)
                 image_editor.add_rectangle(
                     (
@@ -78,7 +78,7 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
                     )
                 )
                 image_editor.add_text(
-                    box.cls, (offset[0] + dimension[0], offset[1] + dimension[1] - 5)
+                    self.__model.names[int(box.cls)], (offset[0] + dimension[0], offset[1] + dimension[1] - 5)
                 )
 
         self.__ndi_helper.send(image_editor.image)
