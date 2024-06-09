@@ -5,11 +5,6 @@ from structures import CV2Image, ReusableThread, TaskerManagerBase
 
 
 class ImageProducer(TaskerManagerBase[CV2Image], ReusableThread):
-    @final
-    @override
-    def _thread_loop(self) -> None:
-        image = self.__camera.get_latest_frame()
-        self._start_tasks(image)
 
     def __init__(self):
         print("ImageProducer initializing...")
@@ -32,3 +27,9 @@ class ImageProducer(TaskerManagerBase[CV2Image], ReusableThread):
     @override
     def _run_after_loop(self) -> None:
         self.__camera.stop()
+
+    @final
+    @override
+    def _thread_loop(self) -> None:
+        image = self.__camera.get_latest_frame()
+        self._start_tasks(image)
