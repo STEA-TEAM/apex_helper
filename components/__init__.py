@@ -4,3 +4,4 @@ from .input_handler import InputHandler
 from .player_detector import PlayerDetector
 from .recoil_suppressor import RecoilSuppressor
 from .weapon_detector import WeaponDetector
+from .websocket_server import WebsocketServer
