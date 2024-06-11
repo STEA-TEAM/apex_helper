@@ -1,8 +1,20 @@
 from dataclasses import dataclass
+from enum import EnumMeta
 from json import dumps
 from overrides import final
-from typing import Any
+from typing import Any, Optional, TypedDict
 from .ws_action import WsAction
+
+
+class ResultType(EnumMeta):
+    failure = "failure"
+    error = "error"
+    success = "success"
+
+
+class ServerResult(TypedDict):
+    result: ResultType
+    message: Optional[str]
 
 
 @dataclass

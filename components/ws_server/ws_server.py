@@ -4,7 +4,7 @@ from structures import ReusableThread, WsMessage
 from .types import WebsocketClient, websocket_clients
 
 
-class WebsocketServer(ReusableThread):
+class WsServer(ReusableThread):
     def __init__(self, host: str = "127.0.0.1", port: int = 8080):
         self.__server = WebSocketServer(host, port, WebsocketClient)
 

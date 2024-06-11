@@ -1,6 +1,6 @@
 from typing import TypedDict
 from .ws_action import WsAction
-from .ws_message import WsMessage
+from .ws_message import ServerResult, WsMessage
 
 
 class Resolution(TypedDict):
@@ -8,10 +8,8 @@ class Resolution(TypedDict):
     width: int
 
 
-class Data(TypedDict):
+class Data(ServerResult):
     resolution: Resolution
-    fps: int
-    name: str
 
 
 class HandshakeServerMessage(WsMessage):

@@ -1,26 +1,22 @@
 from overrides import override, final
 from structures import (
     CV2Image,
-    ImageEditor,
-    NdiHelper,
-    PublisherBase,
-    TaskerBase,
+    DrawElement,
+    DrawType,
+    LayerDrawServerMessage,
     Point,
+    PublisherBase,
+    ResultType,
+    TaskerBase,
 )
-from typing import AnyStr
+from typing import AnyStr, List, Optional
 from ultralytics import YOLO
 from utils import image_in_rectangle
+from .constants import COLOR_MAPPING
 
-import cv2
 import math
 import numpy as np
 import torch
-
-color_mapping = [
-    (0, 255, 255, 255),  # allies
-    (0, 0, 255, 255),  # enemies
-    (255, 255, 0, 255),  # tags
-]
 
 
 def get_torch_device():
@@ -39,10 +35,10 @@ def get_torch_device():
 
 class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
     def __init__(self, model_path: AnyStr, model_image_size: int = 640):
+        self.ws_server: Optional = None
         self.__is_aborted: bool = False
         self.__model = YOLO(model_path).to(get_torch_device())
         self.__model_image_size: int = model_image_size
-        self.__ndi_helper: NdiHelper = NdiHelper("PlayerDetector")
 
         TaskerBase.__init__(self)
         PublisherBase.__init__(self)
@@ -73,35 +69,75 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
         if self.__is_aborted:
             return
 
-        image_editor = ImageEditor(cv2.cvtColor(payload, cv2.COLOR_BGR2BGRA))
-        image_editor.add_rectangle(
-            (
-                offset,
-                (
-                    math.floor((payload.shape[1] + payload.shape[0]) / 2),
-                    payload.shape[0],
-                ),
-            ),
-            (255, 255, 255, 127),
-        )
+        draw_elements: List[DrawElement] = []
+        if self.ws_server is not None:
+            draw_elements.append({
+                "dimensions": {
+                    "height": payload.shape[0],
+                    "width": payload.shape[0],
+                    "x": offset[0],
+                    "y": offset[1],
+                },
+                "fill": None,
+                "opacity": 0.8,
+                "stroke": {
+                    "color": "#9e9e9e",
+                    "opacity": 1.0,
+                    "width": 3,
+                },
+                "type": DrawType.Rectangle,
+            })
 
         for result in self.__model.predict(source=cropped_image, verbose=False):
             for box in result.boxes.cpu():
-                dimension = np.floor(box.xyxy[0].numpy()).astype(int)
+                dimension = np.floor(box.xyxy[0].numpy()).astype(int).tolist()
                 class_name = self.__model.names[int(box.cls)]
-                color = color_mapping[int(box.cls)]
-                image_editor.add_rectangle(
-                    (
-                        (offset[0] + dimension[0], offset[1] + dimension[1]),
-                        (offset[0] + dimension[2], offset[1] + dimension[3]),
-                    ),
-                    color,
-                )
-                image_editor.add_text(
-                    class_name,
-                    (offset[0] + dimension[0], offset[1] + dimension[1] - 10),
-                    1.0,
-                    color,
-                )
+                color = COLOR_MAPPING[class_name]
+                if self.ws_server is not None:
+                    draw_elements.append(
+                        {
+                            "dimensions": {
+                                "height": dimension[3] - dimension[1],
+                                "width": dimension[2] - dimension[0],
+                                "x": offset[0] + dimension[0],
+                                "y": offset[1] + dimension[1],
+                            },
+                            "fill": None,
+                            "opacity": 0.8,
+                            "stroke": {
+                                "color": color,
+                                "opacity": 1.0,
+                                "width": 3,
+                            },
+                            "type": DrawType.Rectangle,
+                        }
+                    )
+                    draw_elements.append(
+                        {
+                            "content": class_name,
+                            "dimensions": {
+                                "x": offset[0] + dimension[0],
+                                "y": offset[1] + dimension[1] - 10,
+                            },
+                            "font": None,
+                            "fill": {
+                                "color": color,
+                                "opacity": 1.0,
+                            },
+                            "opacity": 0.8,
+                            "stroke": None,
+                            "type": DrawType.Text,
+                        }
+                    )
 
-        self.__ndi_helper.send(image_editor.image)
+        if self.ws_server is not None:
+            self.ws_server.broadcast(
+                LayerDrawServerMessage(
+                    {
+                        "elements": draw_elements,
+                        "message": None,
+                        "name": self.__class__.__name__,
+                        "result": ResultType.success,
+                    }
+                )
+            )
