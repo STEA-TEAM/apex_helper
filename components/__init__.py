@@ -1,4 +1,5 @@
 from .device_adapters import EmulateAdapter
+from .enemy_tracker import EnemyTracker
 from .image_producer import ImageProducer
 from .input_handler import InputHandler
 from .player_detector import PlayerDetector

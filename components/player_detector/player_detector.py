@@ -8,6 +8,7 @@ from structures import (
     PublisherBase,
     ResultType,
     TaskerBase,
+    Rectangle,
 )
 from typing import AnyStr, List, Optional
 from ultralytics import YOLO
@@ -88,6 +89,7 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
                 "type": DrawType.Rectangle,
             })
 
+        enemy_rects: List[Rectangle] = []
         for result in self.__model.predict(source=cropped_image, verbose=False):
             for box in result.boxes.cpu():
                 dimension = np.floor(box.xyxy[0].numpy()).astype(int).tolist()
@@ -129,7 +131,13 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
                             "type": DrawType.Text,
                         }
                     )
-
+                if class_name == "enemy":
+                    enemy_rects.append(
+                        (
+                            (offset[0] + dimension[0], offset[1] + dimension[1]),
+                            (offset[0] + dimension[2], offset[1] + dimension[3]),
+                        )
+                    )
         if self.ws_server is not None:
             self.ws_server.broadcast(
                 LayerDrawServerMessage(
@@ -141,3 +149,4 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
                     }
                 )
             )
+        self._publish(enemy_rects)

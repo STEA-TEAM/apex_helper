@@ -1,10 +1,10 @@
 from components.device_adapters import DeviceInstruction
 from components.input_handler import InputPayload, InputType, MouseClickEvent
+from components.weapon_detector import WeaponIdentity
 from overrides import override, final
 from pynput import mouse
 from structures import TaskerBase, SubscriberBase, ConsumerManagerBase
 from typing import cast
-from components.weapon_detector import WeaponIdentity
 
 from .constants import RECOIL_SUPPRESSION_DICT
 
