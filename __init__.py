@@ -32,7 +32,7 @@ if __name__ == "__main__":
     ws_server = WsServer()
 
     enemy_tracker.add_consumer(emulate_adapter)
-    enemy_tracker.ws_server = ws_server
+    # enemy_tracker.ws_server = ws_server
 
     image_producer.add_tasker(player_detector)
     # image_producer.add_tasker(weapon_detector)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     # input_handler.add_tasker(recoil_suppressor)
 
     player_detector.add_subscriber(enemy_tracker)
-    player_detector.ws_server = ws_server
+    # player_detector.ws_server = ws_server
 
     # recoil_suppressor.add_consumer(emulate_adapter)
 

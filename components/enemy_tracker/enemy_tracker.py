@@ -14,9 +14,11 @@ from structures import (
     SubscriberBase,
     TaskerBase,
 )
+from time import time
 from threading import Event
 from typing import cast, List, Optional
-from .utils import move_to
+from .types import PID
+from .utils import move_to, get_distance
 
 import math
 
@@ -29,6 +31,8 @@ class EnemyTracker(
     def __init__(self):
         screen_size = get_screen_size()
         self.__center: Point = (math.floor(screen_size.width / 2), math.floor(screen_size.height / 2))
+        self.__last_time: float = 0.0
+        self.__pid = PID(1.5, 0.2, 0.1)
         self.__track_event: Event = Event()
         self.ws_server: Optional = None
 
@@ -50,7 +54,17 @@ class EnemyTracker(
                 round((closest_rect[0][0] + closest_rect[1][0]) / 2),
                 round(closest_rect[0][1] + (closest_rect[1][1] - closest_rect[0][1]) / 4)
             )
-            self._append_all(move_to(self.__center, enemy_chest_point))
+
+            current_time = time()
+            dt = current_time - self.__last_time if self.__last_time > 0 else 0.01
+            self.__last_time = current_time
+
+            distance = get_distance(self.__center, enemy_chest_point)
+            if distance <= 5:
+                return
+
+            control_signal = self.__pid.compute(distance, dt)
+            self._append_all(move_to(self.__center, enemy_chest_point, distance, control_signal, dt))
             if self.ws_server is not None:
                 draw_elements.append({
                     "dimensions": {

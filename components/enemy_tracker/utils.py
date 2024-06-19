@@ -4,14 +4,23 @@ from structures import Point
 import numpy as np
 
 
-def move_to(start_point: Point, end_point: Point) -> DeviceInstruction:
-    offset = np.array(end_point) - np.array(start_point)
-    direction = np.sign(offset)
+def get_distance(point1: Point, point2: Point) -> float:
+    return np.linalg.norm(np.array(point1) - np.array(point2)).astype(float)
+
+
+def move_to(
+        start_point: Point,
+        end_point: Point,
+        distance: float,
+        control_signal: float,
+        dt: float
+) -> DeviceInstruction:
+    direction = (np.array(end_point) - np.array(start_point)) / distance
     return (
         DeviceType.Mouse,
         (
             [MouseEventFlag.Move],
-            np.multiply(np.multiply(np.log10(np.abs(offset) + 1), direction), 10).astype(int).tolist(),
+            (control_signal * direction * dt).astype(int).tolist(),
             0
         ),
         0
