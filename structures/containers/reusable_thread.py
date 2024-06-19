@@ -13,7 +13,7 @@ class ReusableThread(ABC, EnforceOverrides):
 
         Thread(target=self.__thread_target, name=self.__class__.__name__).start()
 
-    def start(self) -> None:
+    def run(self) -> None:
         self.__run_event.set()
 
     def stop(self) -> None:
@@ -75,7 +75,7 @@ class ThreadManager(EnforceOverrides):
             f"Starting {self._thread_map.__len__()} threads: {', '.join(self._thread_map.keys())}"
         )
         for reusable_thread in self._thread_map.values():
-            reusable_thread.start()
+            reusable_thread.run()
         return self
 
     @final

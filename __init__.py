@@ -22,7 +22,7 @@ def on_press(key):
 listener = Listener(on_press=on_press)
 
 if __name__ == "__main__":
-    # emulate_adapter = EmulateAdapter()
+    emulate_adapter = EmulateAdapter()
     enemy_tracker = EnemyTracker()
     image_producer = ImageProducer()
     input_handler = InputHandler()
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     # weapon_detector = WeaponDetector()
     ws_server = WsServer()
 
+    enemy_tracker.add_consumer(emulate_adapter)
     enemy_tracker.ws_server = ws_server
 
     image_producer.add_tasker(player_detector)
@@ -42,9 +43,9 @@ if __name__ == "__main__":
     player_detector.add_subscriber(enemy_tracker)
     player_detector.ws_server = ws_server
 
-    # weapon_detector.add_subscriber(recoil_suppressor)
-
     # recoil_suppressor.add_consumer(emulate_adapter)
+
+    # weapon_detector.add_subscriber(recoil_suppressor)
 
     listener.start()
     print("Press delete to stop")

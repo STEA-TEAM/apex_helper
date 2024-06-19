@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import Dict, Generic, AnyStr, TypeVar
 
 from overrides import final, EnforceOverrides
@@ -6,15 +7,12 @@ T = TypeVar("T")
 
 
 class SubscriberBase(EnforceOverrides, Generic[T]):
-    def __init__(self):
-        self._item: T | None = None
-
-    @final
-    def notify(self, item: T) -> None:
-        self._item = item
+    @abstractmethod
+    def notify(self, data: T) -> None:
+        pass
 
 
-class PublisherBase(EnforceOverrides):
+class PublisherBase(EnforceOverrides, Generic[T]):
     def __init__(self):
         self.__subscribers: Dict[AnyStr, SubscriberBase] = {}
 
@@ -27,6 +25,6 @@ class PublisherBase(EnforceOverrides):
         del self.__subscribers[subscriber.__class__.__name__]
 
     @final
-    def _publish(self, item: T) -> None:
+    def _publish(self, data: T) -> None:
         for subscriber in self.__subscribers.values():
-            subscriber.notify(item)
+            subscriber.notify(data)

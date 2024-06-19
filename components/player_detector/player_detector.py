@@ -34,7 +34,7 @@ def get_torch_device():
     return torch.device("cpu")
 
 
-class PlayerDetector(TaskerBase[CV2Image], PublisherBase):
+class PlayerDetector(TaskerBase[CV2Image], PublisherBase[List[Rectangle]]):
     def __init__(self, model_path: AnyStr, model_image_size: int = 640):
         self.ws_server: Optional = None
         self.__is_aborted: bool = False

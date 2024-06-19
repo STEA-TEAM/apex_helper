@@ -10,6 +10,7 @@ from .constants import (
     RIGHT_SOLT,
     WEAPON_ICON_AREA,
 )
+from .types import WeaponIdentity
 from .utils import (
     get_ammo_type,
     get_point_color,
@@ -23,7 +24,7 @@ from .utils import (
 import numpy as np
 
 
-class WeaponDetector(TaskerBase[CV2Image], PublisherBase):
+class WeaponDetector(TaskerBase[CV2Image], PublisherBase[WeaponIdentity]):
     def __init__(self, screen_size: Point = get_screen_size()):
         self.__is_aborted: bool = False
         self.__ndi_helper: NdiHelper = NdiHelper("WeaponDetector")
