@@ -28,11 +28,11 @@ class EnemyTracker(
     SubscriberBase[List[Rectangle]],
     TaskerBase[InputPayload],
 ):
-    def __init__(self):
+    def __init__(self, kp: float, ki: float, kd: float):
         screen_size = get_screen_size()
         self.__center: Point = (math.floor(screen_size.width / 2), math.floor(screen_size.height / 2))
         self.__last_time: float = 0.0
-        self.__pid = PID(1.5, 0.2, 0.1)
+        self.__pid = PID(kp, ki, kd)
         self.__track_event: Event = Event()
         self.ws_server: Optional = None
 
@@ -60,7 +60,7 @@ class EnemyTracker(
             self.__last_time = current_time
 
             distance = get_distance(self.__center, enemy_chest_point)
-            if distance <= 5:
+            if distance <= 20:
                 return
 
             control_signal = self.__pid.compute(distance, dt)
@@ -110,6 +110,8 @@ class EnemyTracker(
                     self.__track_event.set()
                 else:
                     self.__track_event.clear()
+                    self.__last_time = 0.0
+                    self.__pid.reset()
 
     def __calculate_distance(self, rect: Rectangle):
         rect_center = ((rect[0][0] + rect[1][0]) / 2, (rect[0][1] + rect[1][1]) / 2)

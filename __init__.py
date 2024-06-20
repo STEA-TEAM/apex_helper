@@ -23,7 +23,7 @@ listener = Listener(on_press=on_press)
 
 if __name__ == "__main__":
     emulate_adapter = EmulateAdapter()
-    enemy_tracker = EnemyTracker()
+    enemy_tracker = EnemyTracker(15.0, 1.0, 0.5)
     image_producer = ImageProducer()
     input_handler = InputHandler()
     player_detector = PlayerDetector("apex_8n.onnx")
