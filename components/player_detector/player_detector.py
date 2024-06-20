@@ -38,7 +38,7 @@ class PlayerDetector(TaskerBase[CV2Image], PublisherBase[List[Rectangle]]):
     def __init__(self, model_path: AnyStr, model_image_size: int = 640):
         self.ws_server: Optional = None
         self.__is_aborted: bool = False
-        self.__model = YOLO(model_path)
+        self.__model = YOLO(model_path, task="detect")
         self.__model_image_size: int = model_image_size
 
         TaskerBase.__init__(self)

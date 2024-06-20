@@ -32,7 +32,7 @@ if __name__ == "__main__":
     ws_server = WsServer()
 
     enemy_tracker.add_consumer(emulate_adapter)
-    # enemy_tracker.ws_server = ws_server
+    enemy_tracker.ws_server = ws_server
 
     image_producer.add_tasker(player_detector)
     # image_producer.add_tasker(weapon_detector)
