@@ -26,7 +26,7 @@ if __name__ == "__main__":
     enemy_tracker = EnemyTracker()
     image_producer = ImageProducer()
     input_handler = InputHandler()
-    player_detector = PlayerDetector("apex_8s.pt")
+    player_detector = PlayerDetector("apex_8n.onnx")
     # recoil_suppressor = RecoilSuppressor()
     # weapon_detector = WeaponDetector()
     ws_server = WsServer()

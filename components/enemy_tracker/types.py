@@ -1,7 +1,3 @@
-from structures import Point
-import numpy as np
-
-
 class PID:
     def __init__(self, kp, ki, kd):
         self.Kp = kp
